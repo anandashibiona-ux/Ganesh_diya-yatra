@@ -1,0 +1,3169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Diya Yatra — Hills of Light</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --maroon: #3a0d1e;
+      --indigo: #16122b;
+      --gold: #d9a94e;
+      --cream: #f4ead6;
+      --turmeric: #f4c430;
+      --kumkum: #d1453b;
+      --marigold: #f3924a;
+      --leafgreen: #4a9b5e;
+      --indigopowder: #7b6cd9;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: inherit;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      color: var(--cream);
+      background: var(--indigo);
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .title-serif {
+      font-family: 'Yatra One', cursive;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 900px;
+      max-height: 900px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      gap: 14px;
+      background:
+        radial-gradient(circle at 50% 15%, rgba(217, 169, 78, 0.08), transparent 60%),
+        linear-gradient(180deg, var(--maroon) 0%, var(--indigo) 100%);
+    }
+
+    .screen.active {
+      display: flex;
+      animation: screenFadeIn 0.4s ease forwards;
+    }
+
+    @keyframes screenFadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .kolam-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 50% 90%, rgba(217, 169, 78, 0.12) 0%, transparent 70%),
+        radial-gradient(circle at 10% 20%, rgba(244, 196, 48, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 40%, rgba(244, 196, 48, 0.03) 0%, transparent 40%);
+    }
+
+    .kolam-bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.04;
+      background-image: radial-gradient(var(--gold) 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+    }
+
+    .kolam-bg::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 45%;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1000 200" xmlns="http://www.w3.org/2000/svg"><path d="M0,200 L0,120 Q50,90 100,110 T250,60 T400,100 T550,40 T700,90 T850,50 T1000,100 L1000,200 Z" fill="%2316122b"/></svg>') no-repeat bottom;
+      background-size: cover;
+      opacity: 0.85;
+    }
+
+    h1.game-title {
+      font-size: clamp(2.1rem, 8vw, 3.1rem);
+      margin: 0;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+      text-shadow: 0 0 24px rgba(217, 169, 78, 0.35);
+    }
+
+    .subtitle {
+      font-size: 0.92rem;
+      color: var(--cream);
+      opacity: 0.75;
+      margin: -6px 0 6px;
+      max-width: 320px;
+    }
+
+    .btn {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 14px 40px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      color: var(--indigo);
+      background: linear-gradient(180deg, var(--gold), #c9944a);
+      box-shadow: 0 6px 18px rgba(217, 169, 78, 0.35);
+    }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--cream);
+      border: 1px solid rgba(244, 234, 214, 0.35);
+      box-shadow: none;
+      padding: 10px 28px;
+      font-size: 0.9rem;
+    }
+
+    .link-row {
+      display: flex;
+      gap: 18px;
+      margin-top: 4px;
+    }
+
+    .textlink {
+      background: none;
+      border: none;
+      color: var(--cream);
+      opacity: 0.7;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .howto-box {
+      max-width: 320px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--cream);
+      opacity: 0.85;
+      background: rgba(244, 234, 214, 0.06);
+      border: 1px solid rgba(217, 169, 78, 0.25);
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: none;
+      max-height: 220px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .howto-box.open {
+      display: block;
+    }
+
+    .tale {
+      margin-bottom: 10px;
+    }
+
+    .tale:last-child {
+      margin-bottom: 0;
+    }
+
+    .tale .taleTitle {
+      color: var(--gold);
+      font-weight: 600;
+      font-size: 0.82rem;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .best-badge {
+      font-size: 0.8rem;
+      opacity: 0.6;
+      letter-spacing: 0.5px;
+    }
+
+    #gameScreen {
+      padding: 0;
+      background: none;
+    }
+
+    .hud {
+      position: absolute;
+      top: calc(10px + env(safe-area-inset-top, 0px));
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 0 16px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .hud .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .hud .stat .val {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hud .stat .lbl {
+      font-size: 0.6rem;
+      letter-spacing: 1px;
+      opacity: 0.65;
+    }
+
+    .fuelWrap {
+      width: 120px;
+    }
+
+    .fuelBar {
+      width: 100%;
+      height: 9px;
+      border-radius: 6px;
+      background: rgba(244, 234, 214, 0.15);
+      overflow: hidden;
+      margin-top: 3px;
+    }
+
+    .fuelFill {
+      height: 100%;
+      background: linear-gradient(90deg, #a13d36, #b06935, #b39129);
+      width: 100%;
+      transition: width 0.15s linear;
+    }
+
+    .taskPanel {
+      position: absolute;
+      top: calc(62px + env(safe-area-inset-top, 0px));
+      left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 5;
+      pointer-events: none;
+      max-width: 200px;
+    }
+
+    .taskItem {
+      font-size: 0.74rem;
+      color: var(--cream);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(22, 18, 43, 0.45);
+      border: 1px solid rgba(217, 169, 78, 0.12);
+      border-radius: 9px;
+      padding: 4px 10px;
+      backdrop-filter: blur(2px);
+    }
+
+    .taskItem .ticon {
+      font-size: 0.9rem;
+      flex: none;
+    }
+
+    .taskItem.done {
+      background: rgba(74, 155, 94, 0.35);
+      border-color: rgba(74, 155, 94, 0.6);
+      animation: taskPop 0.4s ease;
+    }
+
+    @keyframes taskPop {
+      0% {
+        transform: scale(1);
+      }
+
+      35% {
+        transform: scale(1.08);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .obstacle-warning {
+      position: absolute;
+      top: calc(110px + env(safe-area-inset-top, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(163, 55, 47, 0.75);
+      color: var(--cream);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(244, 196, 48, 0.25);
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .obstacle-warning.show {
+      opacity: 1;
+      animation: warnPulse 0.5s infinite alternate;
+    }
+
+    @keyframes warnPulse {
+      from {
+        transform: translateX(-50%) scale(1);
+      }
+
+      to {
+        transform: translateX(-50%) scale(1.05);
+      }
+    }
+
+    .toast {
+      position: absolute;
+      top: calc(56px + env(safe-area-inset-top, 0px));
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      background: rgba(189, 146, 64, 0.85);
+      color: var(--indigo);
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 8px 18px;
+      border-radius: 999px;
+      opacity: 0;
+      z-index: 7;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      max-width: 80%;
+      text-align: center;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .loreToast {
+      position: absolute;
+      bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: linear-gradient(135deg, rgba(74, 44, 120, 0.7), rgba(42, 20, 60, 0.85));
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--cream);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      padding: 16px 20px;
+      border-radius: 16px;
+      border: 1px solid rgba(217, 169, 78, 0.4);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      width: 320px;
+      max-width: 85%;
+      text-align: left;
+      opacity: 0;
+      z-index: 7;
+      pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .loreToast .taleTitle {
+      color: var(--gold);
+      font-weight: 700;
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+    }
+
+    .loreToast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #game {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+    }
+
+    #gasBtn,
+    #brakeBtn {
+      position: absolute;
+      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      z-index: 6;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 16px 28px rgba(0, 0, 0, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.3), inset 0 -4px 12px rgba(0, 0, 0, 0.7);
+      transition: transform 120ms ease-out, filter 150ms ease, box-shadow 150ms ease;
+      animation: pedalPulse 3.5s ease-in-out infinite alternate;
+      color: transparent;
+      overflow: visible;
+    }
+
+    @keyframes pedalPulse {
+      0% {
+        filter: brightness(1);
+      }
+
+      100% {
+        filter: brightness(1.08);
+      }
+    }
+
+    #gasBtn::after,
+    #brakeBtn::after {
+      position: absolute;
+      bottom: -24px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: rgba(244, 234, 214, 0.6);
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+      text-transform: uppercase;
+    }
+
+    #gasBtn::after {
+      content: "GAS";
+    }
+
+    #brakeBtn::after {
+      content: "BRAKE";
+    }
+
+    #brakeBtn {
+      left: calc(16px + env(safe-area-inset-left, 0px));
+      width: clamp(75px, 12vw, 125px);
+      height: clamp(65px, 10vw, 100px);
+      background-image: url('brake_pedal.jpg');
+      background-size: cover;
+      background-position: center;
+      background-color: #170f26;
+    }
+
+    #gasBtn {
+      right: calc(16px + env(safe-area-inset-right, 0px));
+      width: clamp(70px, 10vw, 110px);
+      height: clamp(90px, 14vw, 135px);
+      background-image: url('gas_pedal.jpg');
+      background-size: cover;
+      background-position: center;
+      background-color: #170f26;
+    }
+
+    #gasBtn:hover,
+    #brakeBtn:hover {
+      filter: brightness(1.15);
+      animation: none;
+    }
+
+    #gasBtn.pressed,
+    #brakeBtn.pressed {
+      transform: translateY(4px) scale(0.98);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.15), inset 0 -2px 6px rgba(0, 0, 0, 0.8);
+    }
+
+    #pauseBtn {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: calc(14px + env(safe-area-inset-top, 0px));
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: var(--cream);
+      font-size: 0.9rem;
+      z-index: 6;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overlay-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      background: rgba(9, 8, 23, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-box {
+      background: rgba(31, 18, 48, 0.85);
+      border: 1px solid rgba(217, 169, 78, 0.3);
+      border-radius: 20px;
+      padding: 32px 40px;
+      text-align: center;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-width: 90%;
+    }
+
+    .modal-box h2 {
+      margin: 0;
+      font-size: 1.6rem;
+      color: var(--gold);
+    }
+
+    .modal-box p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* ── Coming Soon Modal ─────────────────────────────────── */
+    @keyframes csModalIn {
+      from {
+        opacity: 0;
+        transform: scale(0.88) translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes csModalOut {
+      from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: scale(0.88) translateY(18px);
+      }
+    }
+
+    #comingSoonModalOverlay .cs-modal-box {
+      background: linear-gradient(145deg, rgba(42, 10, 30, 0.95), rgba(22, 8, 40, 0.95));
+      border: 1px solid rgba(217, 169, 78, 0.4);
+      border-radius: 24px;
+      padding: 36px 40px 32px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(217, 169, 78, 0.15) inset;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: min(90vw, 460px);
+      position: relative;
+      animation: csModalIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    #comingSoonModalOverlay .cs-modal-box.closing {
+      animation: csModalOut 0.28s ease-in both;
+    }
+
+    .cs-close-btn {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: rgba(244, 234, 214, 0.5);
+      font-size: 1.3rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+      padding: 4px;
+      min-width: 32px;
+      min-height: 32px;
+    }
+
+    .cs-close-btn:hover {
+      color: var(--gold);
+    }
+
+    .cs-icon {
+      font-size: 3rem;
+      filter: drop-shadow(0 0 12px rgba(217, 169, 78, 0.6));
+      line-height: 1;
+    }
+
+    .cs-title {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 0.03em;
+    }
+
+    .cs-badge {
+      background: rgba(80, 60, 140, 0.55);
+      border: 1px solid rgba(160, 140, 220, 0.4);
+      color: #c8b8f0;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 4px 14px;
+      border-radius: 100px;
+    }
+
+    .cs-desc {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--cream);
+      opacity: 0.82;
+      line-height: 1.55;
+      max-width: 320px;
+    }
+
+    .cs-got-it {
+      margin-top: 6px;
+      background: linear-gradient(135deg, #8a3a6a 0%, #5a1a3a 100%);
+      border: 1px solid rgba(217, 169, 78, 0.5);
+      color: var(--gold);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 14px 40px;
+      border-radius: 12px;
+      cursor: pointer;
+      min-height: 48px;
+      box-shadow: 0 4px 18px rgba(138, 58, 106, 0.4);
+      transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+    }
+
+    .cs-got-it:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(138, 58, 106, 0.55);
+      background: linear-gradient(135deg, #a04478 0%, #6a2248 100%);
+    }
+
+    .cs-got-it:active {
+      transform: scale(0.97);
+    }
+
+    /* ── Orientation Overlay ───────────────────────────────── */
+    #orientationOverlay {
+      position: absolute;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(9, 8, 23, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      text-align: center;
+      padding: 32px;
+    }
+
+    @keyframes phoneRotate {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      20% {
+        transform: rotate(-90deg);
+      }
+
+      70% {
+        transform: rotate(-90deg);
+      }
+
+      90% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(0deg);
+      }
+    }
+
+    .orient-phone {
+      font-size: 4rem;
+      animation: phoneRotate 3.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 16px rgba(217, 169, 78, 0.5));
+      display: inline-block;
+      transform-origin: center;
+    }
+
+    .orient-title {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+    }
+
+    .orient-desc {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--cream);
+      opacity: 0.8;
+      max-width: 260px;
+      line-height: 1.5;
+    }
+
+    .history-card {
+      width: 100%;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(244, 234, 214, 0.15);
+      border-radius: 14px;
+      padding: 16px 20px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(244, 234, 214, 0.1);
+      padding-bottom: 8px;
+    }
+
+    .history-card-header h3 {
+      margin: 0;
+      color: var(--gold);
+      font-size: 1.1rem;
+    }
+
+    .history-card-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .result-grid {
+      display: flex;
+      gap: 22px;
+      margin: 6px 0 4px;
+    }
+
+    .result-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .result-stat .big {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold);
+      font-family: 'Yatra One', cursive;
+    }
+
+    .result-stat .lbl {
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      opacity: 0.65;
+      margin-top: 2px;
+    }
+
+    .newbest {
+      font-size: 0.8rem;
+      color: var(--turmeric);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* --- cinematic intro --- */
+    .intro-screen {
+      position: fixed;
+      inset: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #090817;
+      width: 100vw;
+      height: 100dvh;
+      z-index: 9000;
+    }
+
+    .intro-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center center;
+      pointer-events: none;
+    }
+
+    @media (max-width:760px) {
+      .intro-video {
+        object-position: center center;
+      }
+    }
+
+    .intro-vignette {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.40));
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .intro-brand {
+      position: absolute;
+      left: 50%;
+      top: 12%;
+      transform: translateX(-50%);
+      width: min(92%, 560px);
+      text-align: center;
+      text-shadow: 0 8px 28px rgba(0, 0, 0, .65);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .intro-kicker {
+      font-size: .66rem;
+      letter-spacing: .24em;
+      font-weight: 700;
+      opacity: .78;
+      margin-bottom: 7px;
+    }
+
+    .intro-title {
+      font-size: clamp(3rem, 10vw, 5.5rem);
+      line-height: .94;
+      color: #ffd979;
+      text-shadow: 0 0 34px rgba(255, 211, 105, .23), 0 10px 36px rgba(0, 0, 0, .45);
+    }
+
+    .intro-tagline {
+      margin-top: 6px;
+      font-size: clamp(1rem, 3.3vw, 1.35rem);
+      letter-spacing: .34em;
+      text-transform: uppercase;
+      opacity: .86;
+    }
+
+    .intro-foot {
+      position: absolute;
+      left: 50%;
+      bottom: 3%;
+      transform: translateX(-50%);
+      font-size: .6rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      opacity: .6;
+      white-space: nowrap;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .intro-start {
+      position: absolute;
+      left: 50%;
+      bottom: 8%;
+      transform: translateX(-50%) translateY(8px);
+      opacity: 0;
+      pointer-events: none;
+      border: none;
+      outline: none;
+      color: #fef5e4;
+      background: rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 16px 36px;
+      border-radius: 9px;
+      font: 700 1.1rem 'Poppins', sans-serif;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease, opacity 0.5s ease;
+      z-index: 10;
+      cursor: pointer;
+    }
+
+    .intro-start.ready {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+      animation: introPulse 3.5s ease-in-out infinite;
+    }
+
+    .intro-start.ready:hover {
+      background: rgba(255, 255, 255, 0.20);
+    }
+
+    .intro-start:active {
+      transform: translateX(-50%) translateY(2px);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .intro-start:focus {
+      outline: none;
+    }
+
+    @keyframes introPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        filter: brightness(1);
+      }
+
+      50% {
+        box-shadow: 0 10px 28px rgba(217, 169, 78, 0.18);
+        filter: brightness(1.06);
+      }
+    }
+
+    /* --- game center --- */
+    .level-screen {
+      justify-content: space-between;
+      overflow: auto;
+      padding: 34px 20px 28px;
+    }
+
+    .level-top {
+      width: min(100%, 840px);
+      z-index: 1;
+      text-align: center;
+    }
+
+    .section-kicker {
+      font-size: .68rem;
+      letter-spacing: .22em;
+      color: #f4c430;
+      font-weight: 700;
+      opacity: .84;
+      margin-bottom: 5px;
+    }
+
+    .level-subtitle {
+      margin: 0 auto;
+      max-width: 620px;
+    }
+
+    .level-grid-wrap {
+      position: relative;
+      width: min(100%, 840px);
+      margin: 20px 0;
+      z-index: 1;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Yatra Route Line */
+    .yatra-route {
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, rgba(126, 244, 48, 0.284) 0, rgba(116, 167, 203, 0.33) 6px, transparent 6px, transparent 16px);
+      z-index: 1;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .yatra-route::after {
+      content: "";
+      position: absolute;
+      inset: -2px 0;
+      background: repeating-linear-gradient(90deg, rgba(244, 196, 48, 0.15) 0, rgba(244, 196, 48, 0.15) 6px, transparent 6px, transparent 16px);
+      filter: blur(3px);
+    }
+
+    .level-card {
+      position: relative;
+      min-height: 220px;
+      padding: 16px 12px 14px;
+      border: 1px solid rgba(244, 196, 48, 0.15);
+      border-radius: 18px;
+      background: rgba(30, 20, 45, 0.55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      transition: transform .24s ease, border-color .24s ease, background .24s ease, opacity .24s ease, box-shadow .24s ease;
+    }
+
+    .level-card::before {
+      content: "";
+      position: absolute;
+      inset: auto -20% -48% -20%;
+      height: 90px;
+      background: radial-gradient(circle, rgba(244, 196, 48, 0.12), transparent 68%);
+      pointer-events: none;
+      transition: opacity .24s ease;
+    }
+
+    .level-card:hover:not(.locked) {
+      transform: translateY(-4px);
+      border-color: rgba(244, 196, 48, 0.4);
+      background: rgba(40, 25, 60, 0.65);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .level-card.selected {
+      border-color: rgba(244, 196, 48, 0.8);
+      background: rgba(45, 28, 68, 0.75);
+      box-shadow: 0 0 0 1px rgba(244, 196, 48, 0.4), 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      transform: translateY(-6px);
+    }
+
+    .level-card.selected::before {
+      opacity: 1;
+      background: radial-gradient(circle, rgba(244, 196, 48, 0.22), transparent 68%);
+    }
+
+    .level-card.locked {
+      background: rgba(18, 12, 28, 0.45);
+      border-color: rgba(255, 255, 255, 0.04);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      cursor: not-allowed;
+    }
+
+    .level-card.locked .road-number,
+    .level-card.locked .road-desc,
+    .level-card.locked .road-diff {
+      opacity: 0.4;
+      filter: grayscale(0.5);
+    }
+
+    .level-card.locked .road-name {
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    .level-card.locked .road-icon {
+      opacity: 0.5;
+      filter: grayscale(0.8) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    }
+
+    .level-card.locked::before {
+      display: none;
+    }
+
+    .road-number {
+      font-size: .68rem;
+      letter-spacing: .16em;
+      opacity: .7;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .road-icon {
+      font-size: 2.4rem;
+      margin: 12px 0 8px;
+      filter: drop-shadow(0 4px 10px rgba(244, 196, 48, .25));
+    }
+
+    .road-name {
+      font-weight: 700;
+      font-size: .95rem;
+      line-height: 1.2;
+      color: #ffe8ad;
+    }
+
+    .road-desc {
+      font-size: .68rem;
+      line-height: 1.4;
+      opacity: .75;
+      margin-top: 6px;
+      max-width: 90%;
+    }
+
+    .road-diff {
+      font-size: .65rem;
+      margin-top: 10px;
+      letter-spacing: .1em;
+      color: #f4c430;
+      font-weight: 700;
+    }
+
+    .lock-tag {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: .7rem;
+      background: rgba(0, 0, 0, .5);
+      border: 1px solid rgba(244, 234, 214, .16);
+      border-radius: 999px;
+      padding: 4px 10px;
+      white-space: nowrap;
+      z-index: 3;
+    }
+
+    .level-actions {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      z-index: 1;
+    }
+
+    #levelStartBtn {
+      min-width: 240px;
+      font-size: 1.15rem;
+      padding: 16px 40px;
+    }
+
+    .level-actions .secondary {
+      padding: 12px 30px;
+    }
+
+    #levelProgress {
+      z-index: 1;
+      margin-top: 2px;
+    }
+
+    /* --- smoother HUD / motion polish --- */
+    .hud {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .hud::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: -7px;
+      height: 66px;
+      border-radius: 20px;
+      background: linear-gradient(90deg, rgba(10, 8, 26, .48), rgba(10, 8, 26, .18), rgba(10, 8, 26, .48));
+      border: 1px solid rgba(244, 234, 214, .07);
+      z-index: -1;
+    }
+
+    #levelVal {
+      font-size: .68rem;
+      letter-spacing: .14em;
+      color: #f4c430;
+    }
+
+    #levelNameVal {
+      font-size: .55rem;
+      letter-spacing: .12em;
+      opacity: .55;
+      margin-bottom: 2px;
+    }
+
+    .fuelBar {
+      height: 10px;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, .2);
+    }
+
+    .fuelFill {
+      transition: width .18s linear;
+      box-shadow: 0 0 11px rgba(244, 196, 48, .24);
+    }
+
+    #gasBtn {
+      will-change: transform, filter;
+      box-shadow: 0 9px 22px rgba(0, 0, 0, .36), inset 0 1px 0 rgba(255, 255, 255, .38), 0 0 30px rgba(217, 169, 78, .12);
+    }
+
+    .screen {
+      will-change: opacity, transform;
+    }
+
+    @media (max-width:760px) {
+      .level-screen {
+        padding: 25px 12px 22px;
+      }
+
+      .yatra-route {
+        width: 3px;
+        height: 80%;
+        top: 10%;
+        bottom: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(180deg, rgba(217, 169, 78, 0) 0%, rgba(217, 169, 78, 0.5) 20%, rgba(217, 169, 78, 0.5) 80%, rgba(217, 169, 78, 0) 100%);
+      }
+
+      .level-grid {
+        grid-template-columns: 1fr;
+        max-width: 320px;
+        margin: 20px auto;
+        gap: 24px;
+      }
+
+      .level-card {
+        min-height: 145px;
+        padding: 16px 14px;
+      }
+    }
+
+    @media (max-width:430px) {
+      .level-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .level-card {
+        min-height: 135px;
+        padding: 14px 12px;
+      }
+
+      .road-icon {
+        font-size: 1.7rem;
+      }
+
+      .road-name {
+        font-size: .79rem;
+      }
+
+      .road-desc {
+        font-size: .58rem;
+      }
+
+      .intro-brand {
+        top: 8%;
+      }
+
+      .intro-start {
+        bottom: max(7%, env(safe-area-inset-bottom));
+        width: auto;
+        max-width: 80%;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+
+    <div id="introScreen" class="screen intro-screen active" oncontextmenu="return false;"
+      style="touch-action: manipulation;">
+      <video id="introVideo" class="intro-video" muted playsinline preload="auto" disablePictureInPicture
+        oncontextmenu="return false;">
+        <source src="ganesh.mp4" type="video/mp4">
+      </video>
+      <div class="intro-vignette"></div>
+      <div class="intro-brand">
+        <div class="intro-kicker">A FESTIVAL HILLS JOURNEY</div>
+        <div class="intro-title title-serif">Diya Yatra</div>
+        <div class="intro-tagline">Hills of Light</div>
+      </div>
+      <button class="intro-start" id="introStartBtn" aria-label="Tap to begin">Tap to Begin</button>
+      <div class="intro-foot">Sri Siddhi Vinayaka • Diya Yatra</div>
+    </div>
+
+    <div id="levelScreen" class="screen level-screen">
+      <div class="kolam-bg"></div>
+      <div class="level-top">
+        <div>
+          <div class="section-kicker">GAME CENTER</div>
+          <h1 class="game-title">Choose Your Road</h1>
+          <p class="subtitle level-subtitle">Every road brings steeper climbs, rougher hills and less room for mistakes.
+          </p>
+        </div>
+      </div>
+
+      <div class="level-grid-wrap">
+        <div class="yatra-route"></div>
+        <div class="level-grid" id="levelGrid"></div>
+      </div>
+
+      <div class="level-actions">
+        <button class="btn" id="levelStartBtn">Start Road</button>
+        <button class="btn secondary" id="mpStartBtn"
+          style="background:linear-gradient(135deg, rgba(123,108,217,0.1), rgba(74,60,163,0.1)); border-color:var(--indigopowder); padding:10px 24px; display:flex; flex-direction:column; align-items:center; gap:2px;">
+          <span style="font-size:1.1rem; color:var(--cream); display:flex; align-items:center; gap:8px;">👥 PLAY WITH
+            FRIEND</span>
+          <span style="font-size:0.65rem; color:var(--indigopowder); letter-spacing:1px; text-transform:uppercase;">Two
+            Player Yatra</span>
+        </button>
+        <button class="btn secondary" id="historyBtn" style="border:none; background:transparent; opacity:0.8;">My
+          Yatra</button>
+      </div>
+    </div>
+
+    <div id="titleScreen" class="screen">
+      <div class="kolam-bg"></div>
+      <h1 class="game-title">Diya Yatra</h1>
+      <p class="subtitle">Drive your lamp-cart across the festival hills. Collect diyas to keep your flame burning, and
+        don't tip over.</p>
+      <button class="btn" id="beginBtn">Begin</button>
+      <div class="link-row">
+        <button class="textlink" id="howToBtn">How to Play</button>
+        <button class="textlink" id="talesBtn">Tales of Ganesh</button>
+        <button class="textlink" id="soundBtn">Sound: On</button>
+      </div>
+      <div class="howto-box" id="howtoBox">
+        Hold the gold GAS button (or press Space / ↑) to drive forward. Let go to coast.
+        Collect glowing diyas and modaks for fuel. Keep your cart from tipping past vertical on the hills.
+      </div>
+      <div class="howto-box" id="talesBox"></div>
+      <div class="best-badge" id="titleBest"></div>
+    </div>
+
+    <div id="gameScreen" class="screen">
+      <div class="hud">
+        <div class="stat">
+          <span class="val" id="levelVal">ROAD 1</span>
+          <span class="lbl" id="levelNameVal">TEMPLE APPROACH</span>
+          <span class="val" id="distVal">0 m</span>
+          <span class="lbl">DISTANCE</span>
+        </div>
+        <div class="stat" style="align-items:flex-end;">
+          <span class="val" id="diyaVal">🪔 0 &nbsp; 🍡 0</span>
+          <span class="lbl">OFFERINGS</span>
+          <div class="fuelWrap">
+            <div class="fuelBar">
+              <div class="fuelFill" id="fuelFill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <canvas id="game"></canvas>
+      <div class="taskPanel" id="taskPanel"></div>
+      <div class="toast" id="toast"></div>
+      <div class="loreToast" id="loreToast"></div>
+      <div id="obstacleWarning" class="obstacle-warning">⚠️ OBSTACLE AHEAD</div>
+      <button id="pauseBtn">❚❚</button>
+      <div id="brakeBtn">BRAKE</div>
+      <div id="gasBtn">GAS</div>
+    </div>
+
+
+    <div id="resultsScreen" class="screen">
+      <div class="kolam-bg"></div>
+      <h1 class="game-title" style="font-size:1.9rem;">Journey's End</h1>
+      <div class="result-grid">
+        <div class="result-stat"><span class="big" id="finalDist">0</span><span class="lbl">METERS</span></div>
+        <div class="result-stat"><span class="big" id="finalDiyas" style="font-size:1.3rem;">0</span><span
+            class="lbl">OFFERINGS</span></div>
+        <div class="result-stat"><span class="big" id="finalTasks">0</span><span class="lbl">TASKS DONE</span></div>
+      </div>
+      <div class="newbest" id="newBestTag" style="display:none;">✨ New Personal Best ✨</div>
+      <button class="btn" id="nextRoadBtn" style="display:none;">Next Road →</button>
+      <button class="btn secondary" id="againBtn">Ride Again</button>
+      <button class="btn secondary" id="roadMapBtn">Road Map</button>
+    </div>
+
+    <div id="summitScreen" class="screen"
+      style="background:radial-gradient(circle at 50% 30%, rgba(217, 169, 78, 0.2), var(--indigo) 70%);">
+      <div class="kolam-bg" style="opacity:0.3;"></div>
+      <div
+        style="font-size:4rem; filter:drop-shadow(0 0 20px rgba(217, 169, 78, 0.8)); margin-bottom:10px; animation:pulse 3s infinite;">
+        ✨</div>
+      <h1 class="game-title" style="font-size:2.4rem; color:var(--gold); margin:0;">Summit of Light</h1>
+      <p style="color:var(--cream); max-width:400px; font-size:1.1rem; line-height:1.6; margin:16px 0 30px;">
+        You have reached the highest peak and offered your light to the festival.<br><br>
+        <strong>Your Yatra is complete.</strong>
+      </p>
+
+      <div class="result-grid" style="margin-bottom:30px;">
+        <div class="result-stat"><span class="big" id="summitDist">0</span><span class="lbl">METERS</span></div>
+        <div class="result-stat"><span class="big" id="summitDiyas" style="font-size:1.3rem;">0</span><span
+            class="lbl">OFFERINGS</span></div>
+      </div>
+
+      <button class="btn" id="summitMapBtn" style="min-width:200px;">Return to Map</button>
+    </div>
+
+    <div id="pauseMenuOverlay" class="overlay-modal" style="display:none;">
+      <div class="modal-box">
+        <h2>PAUSED</h2>
+        <button class="btn" id="resumeBtn">Resume</button>
+        <button class="btn secondary" id="pauseHistoryBtn">Journey Log</button>
+        <button class="btn secondary" id="pauseSoundBtn">Sound: On</button>
+        <button class="btn secondary" id="quitRoadBtn">Quit to Map</button>
+      </div>
+    </div>
+
+    <div id="confirmModalOverlay" class="overlay-modal" style="display:none;">
+      <div class="modal-box">
+        <h2>Leave this road?</h2>
+        <p>Your journey progress will be saved.</p>
+        <div style="display:flex;gap:12px;margin-top:16px;">
+          <button class="btn secondary" id="confirmCancelBtn">Continue</button>
+          <button class="btn" id="confirmQuitBtn" style="background:var(--kumkum);box-shadow:none;">Quit to Map</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="alertModal" class="overlay-modal" style="display:none; z-index:100;">
+      <div class="modal-box" style="text-align:center;">
+        <h2 id="alertModalTitle" style="color:var(--gold);">Error</h2>
+        <p id="alertModalMessage">Something went wrong.</p>
+        <button class="btn secondary" id="alertModalBtn" style="margin-top:16px;">OK</button>
+      </div>
+    </div>
+
+    <div id="comingSoonModalOverlay" class="overlay-modal" style="display:none; z-index:100;">
+      <div class="cs-modal-box" id="comingSoonBox">
+        <button class="cs-close-btn" id="comingSoonCloseBtn" aria-label="Close">✕</button>
+        <div class="cs-icon">🪔</div>
+        <h2 class="cs-title">PLAY WITH FRIEND</h2>
+        <div class="cs-badge">COMING SOON</div>
+        <p class="cs-desc">Travel the Hills of Light together with a friend. Multiplayer co-op is on its way in a future
+          update.</p>
+        <button class="cs-got-it" id="comingSoonBtn">GOT IT</button>
+      </div>
+    </div>
+
+    <div id="historyScreen" class="screen level-screen">
+      <div class="kolam-bg"></div>
+      <div class="level-top">
+        <div>
+          <div class="section-kicker">JOURNEY LOG</div>
+          <h1 class="game-title">My Yatra</h1>
+          <p class="subtitle level-subtitle">Your past journeys and offerings.</p>
+        </div>
+        <div id="historyStats" class="result-grid" style="justify-content:center; margin-top:16px;"></div>
+      </div>
+
+      <div style="flex:1; width:min(100%, 840px); overflow-y:auto; padding-bottom:40px; margin-top:20px;">
+        <div id="historyList" style="display:flex; flex-direction:column; gap:12px;"></div>
+      </div>
+
+      <div class="level-actions" style="margin-top:20px;">
+        <button class="btn secondary" id="historyBackBtn">Back to Map</button>
+      </div>
+    </div>
+
+    <!-- Orientation overlay: shown only on mobile in portrait during gameplay -->
+    <div id="orientationOverlay">
+      <div class="orient-phone">📱</div>
+      <h2 class="orient-title">ROTATE YOUR PHONE</h2>
+      <p class="orient-desc">Diya Yatra is best experienced in landscape. Please turn your device sideways to continue
+        your journey.</p>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var LS_BEST = "diyayatra_best_distance";
+      var LS_SOUND = "diyayatra_sound";
+      function getBest() { try { return parseFloat(localStorage.getItem(LS_BEST) || "0"); } catch (e) { return 0; } }
+      function setBest(v) { try { localStorage.setItem(LS_BEST, String(v)); } catch (e) { } }
+      function getSound() { try { return localStorage.getItem(LS_SOUND) !== "off"; } catch (e) { return true; } }
+      function setSound(on) { try { localStorage.setItem(LS_SOUND, on ? "on" : "off"); } catch (e) { } }
+
+      window.SUPABASE_URL = "";
+      window.SUPABASE_ANON_KEY = "";
+      var supabaseInstance = null;
+      if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY && window.supabase) {
+        supabaseInstance = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      }
+
+      function hashRandom(x, salt) {
+        var str = String(Math.floor(x)) + String(salt) + String(seedOffset);
+        var h = 0x811c9dc5;
+        for (var i = 0; i < str.length; i++) {
+          h ^= str.charCodeAt(i);
+          h = Math.imul(h, 0x01000193);
+        }
+        return ((h >>> 0) / 4294967296);
+      }
+
+      var TRAIL_COLORS = ["#f4c430", "#d1453b", "#f3924a", "#4a9b5e", "#7b6cd9"];
+
+      var STAR_LAYERS = (function () {
+        var layers = [];
+        [{ count: 60, parallax: 0.02, period: 1800, ymax: 0.42, rmin: 0.5, rmax: 1.2 },
+        { count: 34, parallax: 0.045, period: 1800, ymax: 0.32, rmin: 1.0, rmax: 1.9 }].forEach(function (cfg) {
+          var stars = [];
+          for (var i = 0; i < cfg.count; i++) {
+            stars.push({
+              x: Math.random() * cfg.period,
+              y: Math.random() * cfg.ymax,
+              r: cfg.rmin + Math.random() * (cfg.rmax - cfg.rmin),
+              phase: Math.random() * Math.PI * 2,
+              speed: 0.6 + Math.random() * 1.4
+            });
+          }
+          layers.push({ parallax: cfg.parallax, period: cfg.period, stars: stars });
+        });
+        return layers;
+      })();
+
+      var CLOUD_PUFFS = (function () {
+        var arr = [];
+        for (var i = 0; i < 5; i++) {
+          arr.push({ x: Math.random() * 900, y: 0.12 + Math.random() * 0.22 });
+        }
+        return arr;
+      })();
+
+      var screen = "title";
+      var canvas = document.getElementById("game");
+      var ctx = canvas.getContext("2d");
+      var dpr = Math.max(1, window.devicePixelRatio || 1);
+      var dims = { w: 0, h: 0 };
+
+      var soundOn = getSound();
+
+      var AudioManager = {
+        music: new Audio("diya-yatra-driving.mp3"),
+        baseVolume: 0.18,
+        targetVolume: 0.18,
+        currentVolume: 0,
+        isDucking: false,
+        duckTimer: null,
+        isPlaying: false,
+        
+        init: function() {
+          this.music.loop = true;
+          this.music.preload = "auto";
+        },
+        
+        setMute: function(isMuted) {
+          if (isMuted) {
+            this.music.volume = 0;
+          } else if (this.isPlaying) {
+            this.music.volume = this.currentVolume;
+          }
+        },
+        
+        playMusic: function(levelId) {
+          this.isPlaying = true;
+          if (levelId === 1) this.baseVolume = 0.16;
+          else if (levelId === 2) this.baseVolume = 0.18;
+          else if (levelId === 3) this.baseVolume = 0.19;
+          else if (levelId === 4) this.baseVolume = 0.20;
+          else this.baseVolume = 0.22;
+          
+          this.targetVolume = this.baseVolume;
+          this.currentVolume = this.baseVolume;
+          this.music.volume = soundOn ? this.currentVolume : 0;
+          
+          var p = this.music.play();
+          if (p !== undefined) p.catch(function() {});
+        },
+        
+        pauseMusic: function() {
+          if (!this.isPlaying) return;
+          this.music.pause();
+        },
+        
+        resumeMusic: function() {
+          if (!this.isPlaying) return;
+          var p = this.music.play();
+          if (p !== undefined) p.catch(function(){});
+        },
+        
+        stopMusic: function(fadeOutMs) {
+          this.isPlaying = false;
+          var self = this;
+          if (fadeOutMs && soundOn) {
+            var startVol = this.music.volume;
+            var steps = 10;
+            var stepTime = fadeOutMs / steps;
+            var stepVol = startVol / steps;
+            var count = 0;
+            var fadeInterval = setInterval(function() {
+              count++;
+              var nv = Math.max(0, startVol - (stepVol * count));
+              self.music.volume = nv;
+              if (count >= steps) {
+                clearInterval(fadeInterval);
+                self.music.pause();
+              }
+            }, stepTime);
+          } else {
+            this.music.pause();
+          }
+        },
+        
+        duck: function(vol, durationMs) {
+          if (!soundOn || !this.isPlaying) return;
+          this.isDucking = true;
+          this.music.volume = vol;
+          clearTimeout(this.duckTimer);
+          var self = this;
+          this.duckTimer = setTimeout(function() {
+            self.isDucking = false;
+          }, durationMs);
+        },
+        
+        updateLoop: function(speedRatio, isBraking, isLowFuel) {
+          if (!soundOn || !this.isPlaying || this.isDucking) return;
+          
+          var nv = this.baseVolume;
+          if (isBraking) {
+            nv -= 0.04;
+          } else if (speedRatio > 0.5) {
+            nv += (speedRatio - 0.5) * 0.06;
+          }
+          
+          if (isLowFuel) {
+            nv -= 0.05;
+          }
+          
+          nv = Math.max(0.05, Math.min(0.3, nv));
+          this.targetVolume = nv;
+          this.currentVolume += (this.targetVolume - this.currentVolume) * 0.03;
+          this.music.volume = this.currentVolume;
+        }
+      };
+      AudioManager.init();
+
+      var isMultiplayer = false;
+      var mpRole = "solo";
+      var mpPin = "";
+      var mpChannel = null;
+      var myPlayerId = Math.random().toString(36).substring(2, 9);
+      var myPlayerName = "Player";
+      var remotePlayer = { connected: false, distance: 0, fuel: 100, x: 0, y: 0, angle: 0, squash: 1, checkpoint: false, name: "Friend" };
+      var lastSyncTs = 0;
+
+      var seedOffset = 0;
+      var worldX = 0;
+      var cameraX = 0;
+      var cameraY = 0;
+      var speed = 0;
+      var cartScreenAnchor = 0.34;
+      var wheelBase = 64;
+      var cart = { y: 0, angle: 0, targetY: 0, targetAngle: 0 };
+      var throttle = false;
+      var brake = false;
+      var distance = 0;
+      var fuel = 100;
+      var diyaCount = 0;
+      var modakCount = 0;
+      var running = false;
+      var startTime = 0;
+      var lastTs = 0;
+
+      var GANESH_STORIES = [
+        { title: "The Guardian at the Door", text: "Parvati shaped a boy from turmeric paste to guard her door. Shiva, not recognizing him, was refused entry. When the misunderstanding was clear, Shiva gave the boy new life with an elephant's head." },
+        { title: "The Broken Tusk", text: "When sage Vyasa needed a scribe to take down the Mahabharata without pause, Ganesha agreed. When his pen failed, he broke off his own tusk and kept writing." },
+        { title: "The Race Around the World", text: "Challenged to race his brother around the world for a sacred fruit, Ganesha simply walked a circle around his parents, stating they were his whole world." },
+        { title: "Mooshika, the Little Mount", text: "Ganesha's companion is a small mouse, Mooshika. Riding something so small is said to show that even a great being stays humble, mastering small, nibbling desires." },
+        { title: "Remover of Obstacles", text: "Ganesha is traditionally worshipped before new beginnings and important undertakings. In many traditions, he is known as Vighnaharta, meaning the one who removes obstacles." },
+        { title: "The Elephant Head", text: "The elephant head symbolizes immense wisdom, understanding, and a discriminating intellect that one must possess to attain perfection in life." },
+        { title: "The Large Ears", text: "Ganesha's large ears symbolize the importance of listening and assimilating ideas. A wise person hears all, but retains only what is good, much like a winnowing basket." },
+        { title: "The Trunk", text: "The elephant's trunk has the strength to uproot a tree, yet the finesse to pick up a needle. It symbolizes high efficiency and adaptability." },
+        { title: "Modak Offering", text: "The modak is believed to be Ganesha's favorite sweet. Its shape resembles a money bag, and it symbolizes the sweet reward of spiritual seeking and a pure mind." },
+        { title: "Ganesh Chaturthi", text: "This ten-day festival celebrates Ganesha's birth. Idols are brought home, worshipped, and then immersed in water, symbolizing the cycle of creation and dissolution in nature." },
+        { title: "The Pot Belly", text: "His large belly signifies the ability to peacefully digest all the good and bad in life, maintaining equanimity." },
+        { title: "The Four Arms", text: "The four arms represent the four inner attributes of the subtle body: mind (Manas), intellect (Buddhi), ego (Ahamkara), and conditioned conscience (Chitta)." },
+        { title: "The Axe and Noose", text: "He holds an axe to cut worldly attachments, and a noose to draw the seeker closer to the ultimate truth." },
+        { title: "The Single Tusk", text: "Ekadanta (one-tusked) signifies holding on to the good (single focus) and throwing away the bad (the broken part)." },
+        { title: "Lord of Beginnings", text: "No Vedic ceremony or new venture starts without invoking Him first. He governs the Muladhara (root) chakra, the foundation of physical manifestation." }
+      ];
+      var storyIndex = 0;
+
+      var trail = [];
+      var embers = [];
+      for (var ei = 0; ei < 70; ei++) { embers.push({ x: Math.random(), y: Math.random(), s: .4 + Math.random() * 1.6, p: Math.random() * Math.PI * 2, z: .5 + Math.random() }); }
+      var pickups = [];
+      var nextPickupSpawnX = 0;
+      var PICKUP_SPACING = 420;
+
+      var shrineMarkers = [];
+      var nextShrineSpawnX = 0;
+      var SHRINE_SPACING = 850;
+      var shrinesPassed = 0;
+
+      var obstacles = [];
+      var nextObstacleSpawnX = 500;
+      var obstacleWarningTime = 0;
+
+      var MAX_SPEED = 400;
+      var THROTTLE_ACCEL = 330;
+      var GRAVITY_FACTOR = 340;
+      var DRAG = 0.5;
+      var FUEL_RATE = 0.0075;
+      var MAX_TILT = 1.22;
+
+      var LEVELS = [
+        { id: 1, name: "Temple Approach", icon: "🛕", desc: "Gentle ceremonial hills for your first ride.", diff: "CALM", speed: 360, accel: 325, gravity: 275, fuel: 0.0067, tilt: 1.28, rough: .72, amp: 1.00, unlockDistance: 144 },
+        { id: 2, name: "Lamp Valley", icon: "🪔", desc: "Longer climbs with sharper dips and turns.", diff: "WARM", speed: 380, accel: 335, gravity: 315, fuel: 0.0071, tilt: 1.24, rough: .90, amp: 1.15, unlockDistance: 280 },
+        { id: 3, name: "Serpent Ridge", icon: "🐍", desc: "Tight undulations punish bad timing.", diff: "FIERY", speed: 400, accel: 345, gravity: 355, fuel: 0.0076, tilt: 1.20, rough: 1.14, amp: 1.35, unlockDistance: 430 },
+        { id: 4, name: "Ghat Climb", icon: "⛰️", desc: "Steeper slopes and less room to recover.", diff: "STEEP", speed: 420, accel: 352, gravity: 405, fuel: 0.0083, tilt: 1.16, rough: 1.34, amp: 1.58, unlockDistance: 600 },
+        { id: 5, name: "Summit of Light", icon: "✨", desc: "The hardest road: fast, steep and unforgiving.", diff: "MASTER", speed: 440, accel: 360, gravity: 470, fuel: 0.0091, tilt: 1.11, rough: 1.58, amp: 1.82, unlockDistance: 800 }
+      ];
+      var selectedLevel = 1;
+      var unlockedLevel = 1;
+      function getLevelProgress() { try { return parseInt(localStorage.getItem('diyayatra_unlocked_level') || '1', 10); } catch (e) { return 1; } }
+      function setUnlockedLevel(v) {
+        unlockedLevel = Math.max(unlockedLevel, v);
+        try { localStorage.setItem('diyayatra_unlocked_level', String(unlockedLevel)); } catch (e) { }
+      }
+      function isRoadUnlocked(id) { return id <= unlockedLevel; }
+      unlockedLevel = getLevelProgress();
+      function currentLevel() { return LEVELS[selectedLevel - 1] || LEVELS[0]; }
+
+      var tasks = [];
+      var totalTasksCompleted = 0;
+      var prevTargetY = 0;
+      var squash = 1;
+
+      var TASK_ICON = { distance: "📍", diyas: "🪔", shrines: "🐘", modaks: "🍡", unlock: "🔓" };
+
+      function makeTask(type) {
+        var t;
+        if (type === "distance") {
+          var dTarget = Math.floor(distance / 50) * 50 + 100 + Math.floor(Math.random() * 60);
+          t = { label: "Reach " + dTarget + "m", type: "distance", target: dTarget };
+        } else if (type === "shrines") {
+          var sTarget = shrinesPassed + 1 + (Math.random() < 0.5 ? 1 : 0);
+          t = { label: "Pass " + sTarget + " Ganesh shrines", type: "shrines", target: sTarget };
+        } else if (type === "modaks") {
+          var mTarget = modakCount + 2 + Math.floor(Math.random() * 2);
+          t = { label: "Collect " + mTarget + " modaks", type: "modaks", target: mTarget };
+        } else {
+          var cTarget = diyaCount + 3 + Math.floor(Math.random() * 3);
+          t = { label: "Collect " + cTarget + " diyas", type: "diyas", target: cTarget };
+        }
+        t.done = false;
+        t.reward = 0.15 + Math.random() * 0.05;
+        return t;
+      }
+
+      function generateTasks() {
+        var pool = ["diyas", "shrines", "modaks"];
+        for (var i = pool.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+        }
+        tasks = [makeTask(pool[0]), makeTask(pool[1])];
+        var lv = currentLevel();
+        if (lv.id < 5) {
+          var uDone = distance >= lv.unlockDistance || isRoadUnlocked(lv.id + 1);
+          tasks.unshift({ label: "Reach " + lv.unlockDistance + "m to unlock Road " + (lv.id + 1), type: "unlock", target: lv.unlockDistance, done: uDone, reward: 0.2 });
+        }
+        renderTasks();
+      }
+
+      function renderTasks() {
+        var panel = document.getElementById("taskPanel");
+        panel.innerHTML = "";
+        tasks.forEach(function (t) {
+          var div = document.createElement("div");
+          div.className = "taskItem" + (t.done ? " done" : "");
+          div.innerHTML = "<span class=\"ticon\">" + TASK_ICON[t.type] + "</span>" + t.label;
+          panel.appendChild(div);
+        });
+      }
+
+      var toastTimer = null;
+      function showToast(text) {
+        var el = document.getElementById("toast");
+        el.textContent = text;
+        el.classList.add("show");
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { el.classList.remove("show"); }, 1600);
+      }
+
+      var loreTimer = null;
+      function showLoreToast(story) {
+        var el = document.getElementById("loreToast");
+        el.innerHTML = "<span class=\"taleTitle\">" + story.title + "</span>" + story.text;
+        el.classList.add("show");
+        if (loreTimer) clearTimeout(loreTimer);
+        loreTimer = setTimeout(function () { el.classList.remove("show"); }, 5200);
+      }
+
+      function checkTasks() {
+        var changed = false;
+        tasks.forEach(function (t, idx) {
+          if (t.done) return;
+          var reached = (t.type === "distance" && distance >= t.target) ||
+            (t.type === "unlock" && distance >= t.target) ||
+            (t.type === "diyas" && diyaCount >= t.target) ||
+            (t.type === "modaks" && modakCount >= t.target) ||
+            (t.type === "shrines" && shrinesPassed >= t.target);
+          if (reached) {
+            t.done = true;
+            changed = true;
+            totalTasksCompleted++;
+            fuel = Math.min(100, fuel + t.reward * 100);
+            showToast("✨ Task complete — +" + Math.round(t.reward * 100) + "% fuel");
+            if (t.type !== "unlock") {
+              (function (i, prevType) {
+                setTimeout(function () {
+                  if (screen !== "game") return;
+                  var types = ["distance", "diyas", "shrines", "modaks"].filter(function (x) { return x !== prevType; });
+                  var nextType = types[Math.floor(Math.random() * types.length)];
+                  tasks[i] = makeTask(nextType);
+                  renderTasks();
+                }, 900);
+              })(idx, t.type);
+            }
+          }
+        });
+        if (changed) renderTasks();
+      }
+
+      function terrainAltitude(wx) {
+        var x = wx + seedOffset;
+        var lv = currentLevel();
+        var y = 0;
+        y += Math.sin(x * 0.0032) * 70 * lv.amp;
+        y += Math.sin(x * (0.0068 + lv.rough * 0.0005) + 1.7) * 32 * lv.amp;
+        y += Math.sin(x * (0.015 + lv.rough * 0.0014) + 4.1) * 14 * lv.rough;
+        y += Math.sin(x * (0.030 + lv.rough * 0.0022) + 0.7) * 7 * lv.rough;
+        y += Math.sin(x * 0.00135 + selectedLevel * 1.4) * 18 * (lv.rough - 0.55);
+        return y + 40;
+      }
+
+      function baselineCanvasY() { return dims.h * 0.62; }
+      function canvasYForAltitude(alt) { return baselineCanvasY() - alt; }
+      function canvasYForWorldX(wx) { return canvasYForAltitude(terrainAltitude(wx)); }
+
+      function worldToScreenX(wx) {
+        var camWorldX = cameraX - dims.w * cartScreenAnchor;
+        return wx - camWorldX;
+      }
+
+      function resetRun() {
+        var lv = currentLevel();
+        MAX_SPEED = lv.speed;
+        THROTTLE_ACCEL = lv.accel;
+        GRAVITY_FACTOR = lv.gravity;
+        // CRITICAL REQUIREMENT: Noticeably stronger fuel consumption
+        FUEL_RATE = lv.fuel * 2.8;
+        if (isMultiplayer) FUEL_RATE *= 1.25;
+        MAX_TILT = lv.tilt;
+
+        if (!isMultiplayer) {
+          seedOffset = Math.floor(Math.random() * 100000);
+        } else if (mpRole === "host") {
+          seedOffset = Math.floor(Math.random() * 100000);
+          if (mpChannel) {
+            mpChannel.send({ type: "broadcast", event: "match_start", payload: { seed: seedOffset, road: selectedLevel } });
+          }
+        }
+
+        if (isMultiplayer && mpChannel && !mpChannel.hasSyncListener) {
+          mpChannel.hasSyncListener = true;
+          mpChannel.on('broadcast', { event: 'sync' }, function (payload) {
+            remotePlayer.x = payload.payload.x;
+            remotePlayer.y = payload.payload.y;
+            remotePlayer.angle = payload.payload.a;
+            remotePlayer.distance = payload.payload.d;
+          });
+          mpChannel.on('broadcast', { event: 'checkpoint' }, function (payload) {
+            remotePlayer.checkpoint = true;
+          });
+        }
+
+        worldX = 0; cameraX = 0; cameraY = 0; speed = 0;
+        cart.y = canvasYForWorldX(0) - 20;
+        cart.angle = 0; cart.targetY = cart.y; cart.targetAngle = 0;
+        throttle = false; brake = false;
+        distance = 0; fuel = 100; diyaCount = 0; modakCount = 0;
+        running = true; startTime = Date.now();
+        trail = []; pickups = []; nextPickupSpawnX = 300;
+        shrineMarkers = []; nextShrineSpawnX = 700; shrinesPassed = 0;
+        obstacles = []; nextObstacleSpawnX = 500; obstacleWarningTime = 0;
+        totalTasksCompleted = 0; storyIndex = 0;
+        lastTs = 0;
+        prevTargetY = cart.targetY; squash = 1;
+        generateTasks();
+      }
+
+      function layout() {
+        dims.w = canvas.clientWidth; dims.h = canvas.clientHeight;
+        canvas.width = Math.round(dims.w * dpr);
+        canvas.height = Math.round(dims.h * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function ensurePickups() {
+        while (nextPickupSpawnX < worldX + Math.max(dims.w, 1000) * 1.5) {
+          var wx = nextPickupSpawnX + (hashRandom(nextPickupSpawnX, "px") * 160 - 80);
+          var kind = hashRandom(nextPickupSpawnX, "pk") < 0.35 ? "modak" : "diya";
+          pickups.push({ wx: wx, alt: terrainAltitude(wx) + 46 + hashRandom(nextPickupSpawnX, "pa") * 20, collected: false, kind: kind });
+          nextPickupSpawnX += PICKUP_SPACING;
+        }
+      }
+
+      function ensureObstacles() {
+        var lv = currentLevel();
+        var spacing = 1200 - (lv.id * 160); // Closer spacing on harder levels
+        if (lv.id === 1) spacing = 1600;
+        while (nextObstacleSpawnX < worldX + Math.max(dims.w, 1000) * 1.5) {
+          var wx = nextObstacleSpawnX + (hashRandom(nextObstacleSpawnX, "ox") * 150);
+          var types = ["rock", "pothole", "mud", "barrier", "bell"];
+          var typePool = types.slice(0, Math.max(1, lv.id));
+          var type = typePool[Math.floor(hashRandom(nextObstacleSpawnX, "ot") * typePool.length)];
+          obstacles.push({ wx: wx, type: type, hit: false, warned: false });
+          nextObstacleSpawnX += spacing;
+        }
+      }
+
+      function ensureShrineMarkers() {
+        while (nextShrineSpawnX < worldX + Math.max(dims.w, 1000) * 1.5) {
+          shrineMarkers.push({ wx: nextShrineSpawnX, passed: false });
+          nextShrineSpawnX += SHRINE_SPACING + hashRandom(nextShrineSpawnX, "sx") * 200;
+        }
+      }
+
+      function update(dt) {
+        if (!running) return;
+
+        var rearX = worldX - wheelBase / 2, frontX = worldX + wheelBase / 2;
+        var cyRear = canvasYForWorldX(rearX), cyFront = canvasYForWorldX(frontX);
+        cart.targetAngle = Math.atan2(cyFront - cyRear, wheelBase);
+        cart.targetY = (cyRear + cyFront) / 2 - 22;
+
+        var grade = (cyRear - cyFront) / wheelBase;
+        var slopeAccel = grade * GRAVITY_FACTOR;
+        var throttleAccel = throttle ? THROTTLE_ACCEL : 0;
+        var brakeDecel = brake ? -600 : 0;
+        var dragAccel = -speed * DRAG;
+
+        speed += (throttleAccel + brakeDecel + slopeAccel + dragAccel) * dt;
+        if (speed < 0) speed = 0;
+        if (speed > MAX_SPEED) speed = MAX_SPEED;
+
+        worldX += speed * dt;
+        var cameraEase = 1 - Math.pow(0.000001, dt);
+        cameraX += (worldX - cameraX) * cameraEase;
+        cameraY += (cart.targetY - cart.y) * cameraEase * 0.12;
+        distance = worldX / 45;
+
+        var verticalJolt = cart.targetY - prevTargetY;
+        prevTargetY = cart.targetY;
+        var squashTarget = 1 - Math.max(-0.16, Math.min(0.16, verticalJolt * 0.012));
+        squash += (squashTarget - squash) * Math.min(1, dt * 14);
+        squash += (1 - squash) * Math.min(1, dt * 4);
+
+        cart.y += (cart.targetY - cart.y) * Math.min(1, dt * 10);
+        cart.angle += (cart.targetAngle - cart.angle) * Math.min(1, dt * 10);
+
+        fuel -= speed * dt * FUEL_RATE;
+        if (fuel < 0) fuel = 0;
+
+        embers.forEach(function (e) {
+          e.x -= (0.0007 + speed * 0.0000025) * dt * 60 * (0.35 + e.z);
+          e.y -= (0.00015 + e.s * 0.00006) * dt * 60;
+          e.p += dt * (0.7 + e.z);
+          if (e.x < -0.05) { e.x = 1.05; e.y = .55 + Math.random() * .42; }
+          if (e.y < .35) { e.y = .82 + Math.random() * .18; e.x = Math.random(); }
+        });
+
+        ensureShrineMarkers();
+        shrineMarkers.forEach(function (m) {
+          if (!m.passed && worldX > m.wx) {
+            m.passed = true;
+            shrinesPassed++;
+            showLoreToast(GANESH_STORIES[storyIndex % GANESH_STORIES.length]);
+            storyIndex++;
+          }
+        });
+        shrineMarkers = shrineMarkers.filter(function (m) { return m.wx > worldX - dims.w * 1.5; });
+
+        checkTasks();
+
+        ctx.restore();
+
+        if (isMultiplayer && remotePlayer.connected) {
+          var rsx = worldToScreenX(remotePlayer.x);
+          if (rsx > -100 && rsx < dims.w + 100) {
+            ctx.save();
+            ctx.translate(rsx, remotePlayer.y);
+            ctx.rotate(remotePlayer.angle);
+            ctx.globalAlpha = 0.5;
+            ctx.fillStyle = "rgba(100,150,255,0.8)";
+            ctx.beginPath();
+            ctx.moveTo(35, -12); ctx.lineTo(-35, -12);
+            ctx.quadraticCurveTo(-40, -12, -40, -18);
+            ctx.lineTo(-30, -32); ctx.lineTo(15, -32);
+            ctx.quadraticCurveTo(35, -32, 40, -18);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+
+            ctx.fillStyle = "rgba(255,255,255,0.7)";
+            ctx.font = "800 12px Poppins";
+            ctx.textAlign = "center";
+            ctx.fillText("FRIEND", rsx, remotePlayer.y - 45);
+          }
+        }
+
+        if (speed > 4) {
+          var rearWheelWX = worldX - wheelBase / 2 * Math.cos(cart.angle);
+          trail.push({ wx: rearWheelWX, alt: terrainAltitude(rearWheelWX) + 6, color: TRAIL_COLORS[Math.floor(distance / 6) % TRAIL_COLORS.length] });
+          if (trail.length > 260) trail.shift();
+        }
+
+        var lv = currentLevel();
+        if (distance >= lv.unlockDistance) {
+          var nextId = selectedLevel + 1;
+          if (nextId <= 5 && !isRoadUnlocked(nextId)) {
+            if (!isMultiplayer || remotePlayer.checkpoint) {
+              setUnlockedLevel(nextId);
+              showToast("✨ ROAD " + nextId + " UNLOCKED ✨");
+              renderLevelCenter();
+            } else {
+              showToast("Waiting for friend to reach checkpoint...");
+              if (mpChannel) mpChannel.send({ type: "broadcast", event: "checkpoint", payload: {} });
+            }
+          } else if (nextId > 5) {
+            if (!isMultiplayer || remotePlayer.distance >= lv.unlockDistance) {
+              showToast("🙏 YATRA COMPLETE: SUMMIT REACHED 🙏");
+              endGame();
+            } else {
+              showToast("Waiting for friend to reach Summit...");
+            }
+          }
+        }
+
+        ensurePickups();
+        pickups.forEach(function (p) {
+          if (p.collected) return;
+          var dx = p.wx - worldX;
+          if (Math.abs(dx) < 34 && Math.abs(canvasYForAltitude(p.alt) - cart.y) < 40) {
+            p.collected = true;
+            if (p.kind === "modak") {
+              modakCount++;
+              fuel = Math.min(100, fuel + 28);
+            } else {
+              diyaCount++;
+              fuel = Math.min(100, fuel + 22);
+            }
+          }
+        });
+        pickups = pickups.filter(function (p) { return p.wx > worldX - dims.w; });
+
+        ensureObstacles();
+        obstacles.forEach(function (o) {
+          var dx = o.wx - worldX;
+          if (dx > 0 && dx < dims.w * 0.9 && !o.warned) {
+            o.warned = true;
+            obstacleWarningTime = 1.0;
+          }
+          if (!o.hit && Math.abs(dx) < 30) {
+            o.hit = true;
+            speed *= 0.5;
+            squash = 0.7;
+            cameraY += 12;
+            AudioManager.duck(0.10, 300);
+            showToast("⚠️ Careful!");
+          }
+        });
+        obstacles = obstacles.filter(function (o) { return o.wx > worldX - dims.w; });
+        if (obstacleWarningTime > 0) obstacleWarningTime -= dt;
+
+        updateHud();
+
+        if (isMultiplayer && remotePlayer.connected) {
+          var ts = Date.now();
+          if (ts - lastSyncTs > 100) {
+            lastSyncTs = ts;
+            mpChannel.send({
+              type: "broadcast",
+              event: "sync",
+              payload: { x: worldX, y: cart.y, a: cart.angle, d: distance, f: fuel }
+            });
+          }
+        }
+
+        if (fuel <= 0 || Math.abs(cart.angle) > MAX_TILT) {
+          endGame();
+        }
+        
+        AudioManager.updateLoop(Math.abs(speed) / 160, brake, fuel < 20);
+      }
+
+      // Still, decorative-only Ganesha murti silhouette for the background parallax layer.
+      // Never traced, never a gameplay target, never touched by gameplay. Warms in color
+      // as distance increases, per the brief's cultural-respect rule.
+      function drawMurtiSilhouette(cx, groundY, scale) {
+        scale = scale || 1;
+        var warmth = Math.max(0, Math.min(1, distance / 600));
+        var fillColor = "rgba(48,20,34,0.95)";
+        var rimColor = "rgba(217,169,78," + (0.6 + warmth * 0.4) + ")";
+
+        ctx.save();
+        ctx.translate(cx, groundY);
+        ctx.scale(scale, scale);
+
+        // small shrine platform
+        ctx.fillStyle = "rgba(20,9,18,0.85)";
+        ctx.fillRect(-30, -6, 60, 9);
+
+        ctx.fillStyle = fillColor;
+        ctx.strokeStyle = rimColor;
+        ctx.lineWidth = 1.6;
+        ctx.shadowColor = rimColor;
+        ctx.shadowBlur = 3 + warmth * 6;
+
+        // ears, drawn first so the head sits in front of their inner edge
+        ctx.beginPath(); ctx.ellipse(-16, -34, 9, 11, 0.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(16, -34, 9, 11, -0.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        // seated body
+        ctx.beginPath();
+        ctx.moveTo(-17, -4);
+        ctx.quadraticCurveTo(-20, -22, -9, -29);
+        ctx.quadraticCurveTo(0, -33, 9, -29);
+        ctx.quadraticCurveTo(20, -22, 17, -4);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        // head, on top of the ear bases
+        ctx.beginPath();
+        ctx.arc(0, -36, 11, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+
+        // trunk, curling forward and down
+        ctx.beginPath();
+        ctx.moveTo(-4, -33);
+        ctx.quadraticCurveTo(-9, -24, -6, -14);
+        ctx.quadraticCurveTo(-3, -9, 1, -13);
+        ctx.quadraticCurveTo(-2, -20, 2, -31);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        // small crown, to read clearly as an idol
+        ctx.beginPath();
+        ctx.moveTo(-6, -46);
+        ctx.lineTo(0, -56);
+        ctx.lineTo(6, -46);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        ctx.shadowBlur = 0;
+        ctx.restore();
+      }
+
+      // Mooshika, Ganesha's small mouse companion. Purely decorative, drawn beside the
+      // roadside shrines. Never touched by gameplay, never collected, never a target.
+      function drawMooshika(cx, groundY, scale) {
+        scale = scale || 1;
+        var bob = Math.sin(performance.now() * 0.006 + cx) * 1.5;
+        ctx.save();
+        ctx.translate(cx, groundY + bob);
+        ctx.scale(scale, scale);
+
+        ctx.fillStyle = "rgba(48,20,34,0.9)";
+        ctx.strokeStyle = "rgba(217,169,78,0.5)";
+        ctx.lineWidth = 1.2;
+
+        // tail
+        ctx.beginPath();
+        ctx.moveTo(-8, -3);
+        ctx.quadraticCurveTo(-16, -2, -18, -9);
+        ctx.strokeStyle = "rgba(217,169,78,0.6)";
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+
+        // body
+        ctx.beginPath();
+        ctx.ellipse(0, -3, 9, 6, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(48,20,34,0.9)";
+        ctx.fill();
+
+        // head
+        ctx.beginPath();
+        ctx.arc(9, -5, 4.6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // ears
+        ctx.beginPath(); ctx.arc(7, -9, 2, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(11, -9, 2, 0, Math.PI * 2); ctx.fill();
+
+        ctx.restore();
+      }
+
+      function render() {
+        ctx.clearRect(0, 0, dims.w, dims.h);
+
+        var skyGrad = ctx.createLinearGradient(0, 0, 0, dims.h);
+        skyGrad.addColorStop(0, "#0f0b2e");
+        skyGrad.addColorStop(0.35, "#241650");
+        skyGrad.addColorStop(0.62, "#4a1240");
+        skyGrad.addColorStop(0.82, "#5c1a2e");
+        skyGrad.addColorStop(1, "#170f26");
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, dims.w, dims.h);
+
+        // warm horizon glow, as if festival lights below are lighting the underside of the sky
+        var horizonGlow = ctx.createRadialGradient(dims.w * 0.5, dims.h * 0.62, 0, dims.w * 0.5, dims.h * 0.62, dims.w * 0.7);
+        horizonGlow.addColorStop(0, "rgba(243,146,74,0.22)");
+        horizonGlow.addColorStop(0.5, "rgba(209,69,59,0.10)");
+        horizonGlow.addColorStop(1, "rgba(209,69,59,0)");
+        ctx.fillStyle = horizonGlow;
+        ctx.fillRect(0, 0, dims.w, dims.h);
+
+        // twinkling star field, two depth layers, tiled and slow-parallaxed
+        var nowStars = performance.now();
+        STAR_LAYERS.forEach(function (layer) {
+          var scrollX = (worldX * layer.parallax) % layer.period;
+          layer.stars.forEach(function (st) {
+            var baseX = ((st.x - scrollX) % layer.period + layer.period) % layer.period;
+            [baseX, baseX - layer.period, baseX + layer.period].forEach(function (sx) {
+              if (sx < -4 || sx > dims.w + 4) return;
+              var twinkle = 0.45 + 0.55 * Math.sin(nowStars * 0.0018 * st.speed + st.phase);
+              ctx.beginPath();
+              ctx.fillStyle = "rgba(244,234,214," + (0.25 + twinkle * 0.55) + ")";
+              ctx.arc(sx, st.y * dims.h, st.r, 0, Math.PI * 2);
+              ctx.fill();
+            });
+          });
+        });
+
+        // floating festival embers / fireflies for extra depth
+        embers.forEach(function (e) {
+          var ex = (e.x * dims.w) - ((cameraX - worldX) * 0.02);
+          if (ex < -8) ex += dims.w + 16;
+          if (ex > dims.w + 8) ex -= dims.w + 16;
+          var ey = e.y * dims.h;
+          var pulse = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(nowStars * .002 + e.p));
+          ctx.beginPath();
+          ctx.fillStyle = "rgba(244,196,48," + (0.08 + 0.18 * pulse * e.z) + ")";
+          ctx.shadowColor = "#f4c430";
+          ctx.shadowBlur = 8 * e.z;
+          ctx.arc(ex, ey, e.s, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+
+        // moon with a soft halo
+        var moonX = dims.w * 0.78, moonY = dims.h * 0.16;
+        var halo = ctx.createRadialGradient(moonX, moonY, 4, moonX, moonY, 54);
+        halo.addColorStop(0, "rgba(217,169,78,0.35)");
+        halo.addColorStop(1, "rgba(217,169,78,0)");
+        ctx.fillStyle = halo;
+        ctx.beginPath(); ctx.arc(moonX, moonY, 54, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath();
+        ctx.arc(moonX, moonY, 24, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(244,234,214,0.92)";
+        ctx.shadowColor = "rgba(217,169,78,0.7)"; ctx.shadowBlur = 22;
+        ctx.fill(); ctx.shadowBlur = 0;
+        // a soft crescent shadow so the moon isn't a flat disc
+        ctx.beginPath();
+        ctx.arc(moonX + 9, moonY - 4, 21, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(58,13,30,0.55)";
+        ctx.fill();
+
+        // drifting clouds, far layer, very low opacity
+        var cloudScroll = (worldX * 0.018) % 900;
+        CLOUD_PUFFS.forEach(function (c) {
+          var cbx = ((c.x - cloudScroll) % 900 + 900) % 900;
+          [cbx, cbx - 900, cbx + 900].forEach(function (sx) {
+            if (sx < -120 || sx > dims.w + 120) return;
+            var cy = c.y * dims.h;
+            ctx.fillStyle = "rgba(123,108,217,0.10)";
+            [-26, 0, 26].forEach(function (off) {
+              ctx.beginPath();
+              ctx.ellipse(sx + off, cy, 34, 15, 0, 0, Math.PI * 2);
+              ctx.fill();
+            });
+          });
+        });
+
+        // festival lantern string along the top edge
+        var buntingScroll = (worldX * 0.09) % 260;
+        ctx.strokeStyle = "rgba(217,169,78,0.3)";
+        ctx.lineWidth = 1.5;
+        for (var bi = -1; bi < Math.ceil(dims.w / 260) + 1; bi++) {
+          var bx0 = bi * 260 - buntingScroll;
+          var bx1 = bx0 + 260;
+          var by = dims.h * 0.045;
+          ctx.beginPath();
+          ctx.moveTo(bx0, by);
+          ctx.quadraticCurveTo((bx0 + bx1) / 2, by + 22, bx1, by);
+          ctx.stroke();
+          for (var bb = 0; bb <= 4; bb++) {
+            var bt = bb / 4;
+            var bpx = bx0 + (bx1 - bx0) * bt;
+            var bpy = by + 22 * Math.sin(bt * Math.PI);
+            var bulbColor = TRAIL_COLORS[(bi + bb) % TRAIL_COLORS.length];
+            var flick = 0.6 + 0.4 * Math.sin(nowStars * 0.006 + bi * 3 + bb);
+            ctx.beginPath();
+            ctx.fillStyle = bulbColor;
+            ctx.globalAlpha = 0.55 + flick * 0.35;
+            ctx.shadowColor = bulbColor; ctx.shadowBlur = 8;
+            ctx.arc(bpx, bpy + 3, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.globalAlpha = 1;
+          }
+        }
+
+        ctx.fillStyle = "rgba(58,13,30,0.6)";
+        var domeSpacing = 220, domeOffset = (worldX * 0.25) % domeSpacing;
+        var domeWorldIndex0 = Math.floor((worldX * 0.25 - domeOffset) / domeSpacing) - 1;
+        for (var i = -1; i < Math.ceil(dims.w / domeSpacing) + 1; i++) {
+          var dx = i * domeSpacing - domeOffset;
+          var worldDomeIndex = domeWorldIndex0 + i + 1;
+          if (worldDomeIndex >= 0 && worldDomeIndex % 5 === 0) {
+            drawMurtiSilhouette(dx, dims.h * 0.55);
+          } else {
+            ctx.beginPath();
+            ctx.arc(dx, dims.h * 0.55, 34, Math.PI, 0);
+            ctx.fill();
+            ctx.fillRect(dx - 34, dims.h * 0.55, 68, 40);
+          }
+        }
+
+        ctx.beginPath();
+        var step = 10;
+        var startWX = cameraX - dims.w * cartScreenAnchor - step;
+        var pts = [];
+        for (var sx = -step; sx <= dims.w + step; sx += step) {
+          var wx2 = startWX + sx + step;
+          var cy = canvasYForWorldX(wx2);
+          pts.push([sx, cy]);
+        }
+        ctx.moveTo(pts[0][0], dims.h);
+        pts.forEach(function (p) { ctx.lineTo(p[0], p[1]); });
+        ctx.lineTo(pts[pts.length - 1][0], dims.h);
+        ctx.closePath();
+        var groundGrad = ctx.createLinearGradient(0, dims.h * 0.4, 0, dims.h);
+        groundGrad.addColorStop(0, "#7a3a2a");
+        groundGrad.addColorStop(0.4, "#5a2419");
+        groundGrad.addColorStop(1, "#2a1220");
+        ctx.fillStyle = groundGrad;
+        ctx.fill();
+
+        // readable road ribbon with soft shoulders and gold edge guides
+        function drawRoadRibbon(width, strokeStyle, alpha) {
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.beginPath();
+          for (var ri = -step; ri <= dims.w + step; ri += step) {
+            var rwx = startWX + ri + step;
+            var rcy = canvasYForWorldX(rwx) - 1;
+            if (ri === -step) ctx.moveTo(ri, rcy); else ctx.lineTo(ri, rcy);
+          }
+          ctx.strokeStyle = strokeStyle;
+          ctx.lineWidth = width;
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.stroke();
+          ctx.restore();
+        }
+        drawRoadRibbon(112, "rgba(26,15,28,.62)", 1);
+        drawRoadRibbon(82, "rgba(48,26,29,.82)", 1);
+        drawRoadRibbon(2, "rgba(244,196,48,.28)", 1);
+
+        ctx.fillStyle = "rgba(217,169,78,0.35)";
+        for (var sx2 = 0; sx2 < dims.w; sx2 += 26) {
+          var wx3 = startWX + sx2 + step;
+          var cy2 = canvasYForWorldX(wx3);
+          ctx.beginPath();
+          ctx.arc(sx2, cy2 + 9, 1.6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        trail.forEach(function (t) {
+          var sx3 = worldToScreenX(t.wx);
+          if (sx3 < -10 || sx3 > dims.w + 10) return;
+          var cy3 = canvasYForAltitude(t.alt);
+          ctx.beginPath();
+          ctx.fillStyle = t.color;
+          ctx.shadowColor = t.color;
+          ctx.shadowBlur = 5;
+          ctx.globalAlpha = 0.7;
+          ctx.arc(sx3, cy3, 3.6, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.shadowBlur = 0;
+        });
+
+        var now = performance.now();
+
+        // roadside shrine markers — the ones the cart actually passes for the Ganesh task
+        shrineMarkers.forEach(function (m) {
+          var sxm = worldToScreenX(m.wx);
+          if (sxm < -30 || sxm > dims.w + 30) return;
+          var cym = canvasYForWorldX(m.wx);
+          drawMurtiSilhouette(sxm, cym, 0.7);
+          drawMooshika(sxm - 26, cym, 0.65);
+        });
+
+        obstacles.forEach(function (o) {
+          var sx = worldToScreenX(o.wx);
+          if (sx < -40 || sx > dims.w + 40) return;
+          var cy = canvasYForWorldX(o.wx);
+
+          ctx.save();
+          ctx.translate(sx, cy);
+          if (o.type === "rock") {
+            ctx.fillStyle = "#3a1d20";
+            ctx.beginPath(); ctx.arc(0, -2, 16, Math.PI, 0); ctx.fill();
+            ctx.strokeStyle = "rgba(217,169,78,0.4)"; ctx.lineWidth = 2; ctx.stroke();
+          } else if (o.type === "pothole") {
+            ctx.fillStyle = "rgba(20,9,18,0.8)";
+            ctx.beginPath(); ctx.ellipse(0, 0, 24, 6, 0, 0, Math.PI * 2); ctx.fill();
+          } else if (o.type === "mud") {
+            ctx.fillStyle = "rgba(58,13,30,0.7)";
+            ctx.beginPath(); ctx.ellipse(0, 0, 40, 10, 0, 0, Math.PI * 2); ctx.fill();
+          } else if (o.type === "barrier") {
+            ctx.fillStyle = "#5a2419";
+            ctx.fillRect(-15, -20, 30, 20);
+            ctx.strokeStyle = "#f4c430"; ctx.lineWidth = 2;
+            ctx.strokeRect(-15, -20, 30, 20);
+            ctx.beginPath(); ctx.moveTo(-15, -20); ctx.lineTo(15, 0); ctx.stroke();
+          } else if (o.type === "bell") {
+            ctx.fillStyle = "#f4c430";
+            ctx.beginPath(); ctx.arc(0, -45, 12, Math.PI, 0); ctx.fill();
+            ctx.fillRect(-12, -45, 24, 15);
+          }
+          ctx.restore();
+        });
+
+        pickups.forEach(function (p) {
+          if (p.collected) return;
+          var sx4 = worldToScreenX(p.wx);
+          if (sx4 < -20 || sx4 > dims.w + 20) return;
+          var cy4 = canvasYForAltitude(p.alt) + Math.sin(now * 0.003 + p.wx) * 4;
+          ctx.beginPath();
+          ctx.fillStyle = "#3a2010";
+          ctx.arc(sx4, cy4 + 6, 8, 0, Math.PI);
+          ctx.fill();
+          var flicker = 0.7 + Math.sin(now * 0.02 + p.wx) * 0.3;
+          ctx.beginPath();
+          ctx.fillStyle = "rgba(244,196,48," + flicker + ")";
+          ctx.shadowColor = "#f4c430"; ctx.shadowBlur = 16;
+          ctx.ellipse(sx4, cy4 - 4, 3.4, 7, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+
+        var carScreenX = dims.w * cartScreenAnchor;
+
+        // ground contact shadow, drawn in world space (not rotated with the cart)
+        ctx.save();
+        ctx.translate(carScreenX, cart.y + 34);
+        ctx.scale(1, 0.32);
+        ctx.beginPath();
+        ctx.arc(0, 0, 44, 0, Math.PI * 2);
+        var shGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 44);
+        shGrad.addColorStop(0, "rgba(0,0,0,0.45)");
+        shGrad.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = shGrad;
+        ctx.fill();
+        ctx.restore();
+
+        ctx.save();
+        ctx.translate(carScreenX, cart.y);
+        ctx.rotate(cart.angle);
+
+        var wheelR = 15;
+        [-wheelBase / 2, wheelBase / 2].forEach(function (ox) {
+          ctx.beginPath();
+          ctx.arc(ox, 22, wheelR, 0, Math.PI * 2);
+          ctx.fillStyle = "#1a1220";
+          ctx.fill();
+          ctx.strokeStyle = "#d9a94e";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          // hub
+          ctx.beginPath();
+          ctx.arc(ox, 22, 4, 0, Math.PI * 2);
+          ctx.fillStyle = "#f4c430";
+          ctx.fill();
+          var spokeAngle = (worldX * 0.05) % (Math.PI * 2);
+          for (var s = 0; s < 4; s++) {
+            var a = spokeAngle + s * (Math.PI / 2);
+            ctx.beginPath();
+            ctx.moveTo(ox, 22);
+            ctx.lineTo(ox + Math.cos(a) * wheelR, 22 + Math.sin(a) * wheelR);
+            ctx.strokeStyle = "rgba(217,169,78,0.7)";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+          }
+        });
+
+        // body, with landing squash-stretch for a bouncier feel
+        ctx.save();
+        ctx.translate(0, 4);
+        ctx.scale(1, squash);
+        ctx.translate(0, -4);
+
+        ctx.beginPath();
+        ctx.moveTo(-38, 14);
+        ctx.quadraticCurveTo(-40, -16, -10, -18);
+        ctx.lineTo(26, -18);
+        ctx.quadraticCurveTo(40, -16, 38, 14);
+        ctx.closePath();
+        var bodyGrad = ctx.createLinearGradient(-38, -18, 38, 14);
+        bodyGrad.addColorStop(0, "#d1453b");
+        bodyGrad.addColorStop(1, "#a52e26");
+        ctx.fillStyle = bodyGrad;
+        ctx.fill();
+        ctx.strokeStyle = "#f4c430";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // gold trim band
+        ctx.beginPath();
+        ctx.moveTo(-36, 6);
+        ctx.lineTo(36, 6);
+        ctx.strokeStyle = "rgba(244,196,48,0.8)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // marigold garland along the trim
+        for (var gx = -32; gx <= 32; gx += 8) {
+          ctx.beginPath();
+          ctx.arc(gx, 6 + Math.sin(gx * 0.5) * 1.5, 2.1, 0, Math.PI * 2);
+          ctx.fillStyle = (Math.round(gx / 8) % 2 === 0) ? "#f3924a" : "#f4c430";
+          ctx.fill();
+        }
+
+        // canopy arch over the lamp
+        ctx.beginPath();
+        ctx.moveTo(-16, -18);
+        ctx.quadraticCurveTo(-14, -40, 0, -42);
+        ctx.quadraticCurveTo(14, -40, 16, -18);
+        ctx.strokeStyle = "#d9a94e";
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+        // small flag atop the canopy
+        ctx.beginPath();
+        ctx.moveTo(0, -42);
+        ctx.lineTo(0, -54);
+        ctx.strokeStyle = "#d9a94e";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        var flagWave = Math.sin(now * 0.006) * 4;
+        ctx.beginPath();
+        ctx.moveTo(0, -54);
+        ctx.lineTo(14 + flagWave, -50);
+        ctx.lineTo(0, -46);
+        ctx.closePath();
+        ctx.fillStyle = "#7b6cd9";
+        ctx.fill();
+
+        // hanging diya flame, under the canopy
+        var lf = 0.7 + Math.sin(now * 0.02) * 0.3;
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(244,196,48," + lf + ")";
+        ctx.shadowColor = "#f4c430"; ctx.shadowBlur = 14;
+        ctx.ellipse(0, -26, 3, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.restore(); // squash
+        ctx.restore(); // rotate/translate
+      }
+
+      function updateHud() {
+        var lv = currentLevel();
+        document.getElementById("levelVal").textContent = "ROAD " + lv.id;
+        document.getElementById("levelNameVal").textContent = lv.name.toUpperCase();
+        document.getElementById("distVal").textContent = Math.floor(distance) + " m";
+        document.getElementById("diyaVal").innerHTML = "🪔 " + diyaCount + " &nbsp; 🍡 " + modakCount;
+        document.getElementById("fuelFill").style.width = fuel + "%";
+
+        var warnEl = document.getElementById("obstacleWarning");
+        if (obstacleWarningTime > 0) {
+          warnEl.classList.add("show");
+        } else {
+          warnEl.classList.remove("show");
+        }
+
+        // Multiplayer HUD
+        if (isMultiplayer && remotePlayer.connected) {
+          if (!document.getElementById("mpHud")) {
+            var hudHtml = "<div id='mpHud' style='position:absolute;top:70px;left:50%;transform:translateX(-50%);display:flex;gap:12px;background:rgba(0,0,0,0.5);border-radius:12px;padding:8px 16px;backdrop-filter:blur(8px);font-size:0.8rem;'><div style='color:var(--cream);text-align:right;'><div style='opacity:0.6;font-size:0.65rem;'>YOU</div><div id='mpHudMe' style='font-weight:600;'>0m</div></div><div style='width:1px;background:rgba(255,255,255,0.2);'></div><div style='color:var(--gold);text-align:left;'><div style='opacity:0.6;font-size:0.65rem;' id='mpHudFriendName'>FRIEND</div><div id='mpHudFriend' style='font-weight:600;'>0m</div></div></div>";
+            document.getElementById("gameScreen").insertAdjacentHTML("beforeend", hudHtml);
+          }
+          document.getElementById("mpHudFriendName").textContent = remotePlayer.name.toUpperCase();
+          document.getElementById("mpHudMe").textContent = Math.floor(distance) + "m";
+          document.getElementById("mpHudFriend").textContent = Math.floor(remotePlayer.distance) + "m";
+        } else {
+          var hudEl = document.getElementById("mpHud");
+          if (hudEl) hudEl.remove();
+        }
+      }
+
+      function tick(ts) {
+        if (!lastTs) lastTs = ts;
+        var dt = Math.min(0.04, (ts - lastTs) / 1000);
+        lastTs = ts;
+        if (screen === "game") {
+          if (running) update(dt);
+          render();
+        }
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) lastTs = 0;
+      });
+
+      var gasBtn = document.getElementById("gasBtn");
+      function setThrottle(on, evt) {
+        if (evt) evt.preventDefault();
+        throttle = on;
+        gasBtn.classList.toggle("pressed", on);
+      }
+      gasBtn.addEventListener("pointerdown", function (e) { setThrottle(true, e); });
+      gasBtn.addEventListener("pointerup", function (e) { setThrottle(false, e); });
+      gasBtn.addEventListener("pointercancel", function (e) { setThrottle(false, e); });
+      gasBtn.addEventListener("pointerleave", function (e) { setThrottle(false, e); });
+
+      var brakeBtn = document.getElementById("brakeBtn");
+      function setBrake(on, evt) {
+        if (evt) evt.preventDefault();
+        brake = on;
+        brakeBtn.classList.toggle("pressed", on);
+      }
+      brakeBtn.addEventListener("pointerdown", function (e) { setBrake(true, e); });
+      brakeBtn.addEventListener("pointerup", function (e) { setBrake(false, e); });
+      brakeBtn.addEventListener("pointercancel", function (e) { setBrake(false, e); });
+      brakeBtn.addEventListener("pointerleave", function (e) { setBrake(false, e); });
+
+      window.addEventListener("keydown", function (e) {
+        if (e.code === "Space" || e.code === "ArrowUp" || e.code === "ArrowRight") setThrottle(true);
+        if (e.code === "ArrowDown" || e.code === "ArrowLeft") setBrake(true);
+      });
+      window.addEventListener("keyup", function (e) {
+        if (e.code === "Space" || e.code === "ArrowUp" || e.code === "ArrowRight") setThrottle(false);
+        if (e.code === "ArrowDown" || e.code === "ArrowLeft") setBrake(false);
+      });
+
+      var pmOverlay = document.getElementById("pauseMenuOverlay");
+      var cfmOverlay = document.getElementById("confirmModalOverlay");
+      document.getElementById("pauseBtn").addEventListener("click", function () {
+        if (!running) return;
+        running = false;
+        AudioManager.pauseMusic();
+        pmOverlay.style.display = "flex";
+      });
+      document.getElementById("resumeBtn").addEventListener("click", function () {
+        running = true;
+        AudioManager.resumeMusic();
+        pmOverlay.style.display = "none";
+        lastTs = 0;
+      });
+      document.getElementById("quitRoadBtn").addEventListener("click", function () {
+        pmOverlay.style.display = "none";
+        cfmOverlay.style.display = "flex";
+      });
+      document.getElementById("confirmCancelBtn").addEventListener("click", function () {
+        cfmOverlay.style.display = "none";
+        running = true;
+        lastTs = 0;
+      });
+      document.getElementById("confirmQuitBtn").addEventListener("click", function () {
+        cfmOverlay.style.display = "none";
+        AudioManager.stopMusic(300);
+        saveJourney(true);
+        openLevelCenter();
+      });
+      document.getElementById("pauseHistoryBtn").addEventListener("click", function () {
+        pmOverlay.style.display = "none";
+        AudioManager.stopMusic(300);
+        renderHistory();
+        showScreen("history");
+      });
+      var pauseSoundBtn = document.getElementById("pauseSoundBtn");
+      if (pauseSoundBtn) {
+        pauseSoundBtn.textContent = "Sound: " + (soundOn ? "On" : "Off");
+        pauseSoundBtn.addEventListener("click", function () {
+          soundOn = !soundOn;
+          setSound(soundOn);
+          AudioManager.setMute(!soundOn);
+          this.textContent = "Sound: " + (soundOn ? "On" : "Off");
+          var mainBtn = document.getElementById("soundBtn");
+          if (mainBtn) mainBtn.textContent = "Sound: " + (soundOn ? "On" : "Off");
+        });
+      }
+
+      function showModal(title, msg) {
+        document.getElementById("alertModalTitle").textContent = title;
+        document.getElementById("alertModalMessage").textContent = msg;
+        document.getElementById("alertModal").style.display = "flex";
+      }
+      document.getElementById("alertModalBtn").addEventListener("click", function () {
+        document.getElementById("alertModal").style.display = "none";
+      });
+
+      function renderLevelCenter() {
+        var grid = document.getElementById("levelGrid");
+        grid.innerHTML = "";
+        LEVELS.forEach(function (lv) {
+          var locked = lv.id > unlockedLevel;
+          var current = lv.id === selectedLevel;
+          var cleared = lv.id < unlockedLevel;
+
+          var statusTag = "";
+          if (locked) {
+            var prev = LEVELS.find(function (l) { return l.id === lv.id - 1; });
+            statusTag = '<span class="lock-tag" style="background:rgba(0,0,0,0.5);border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);line-height:1.2;padding:6px 12px;border-radius:6px;width:100%;box-sizing:border-box;">🔒 LOCKED<br><span style="font-size:0.65rem;opacity:0.8;">Reach ' + (prev ? prev.unlockDistance : 0) + 'm on Road ' + (lv.id - 1) + '</span></span>';
+          } else if (current) {
+            statusTag = '<span class="lock-tag" style="background:rgba(217,169,78,0.2);border-color:var(--gold);color:var(--gold);">CURRENT</span>';
+          } else if (cleared) {
+            statusTag = '<span class="lock-tag" style="background:rgba(74,155,94,0.3);border-color:rgba(74,155,94,0.6);color:var(--leafgreen);">✓ CLEARED</span>';
+          } else {
+            statusTag = '<span class="lock-tag" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);color:var(--cream);">AVAILABLE</span>';
+          }
+
+          var card = document.createElement("button");
+          card.type = "button";
+          card.className = "level-card" + (current ? " selected" : "") + (locked ? " locked" : "");
+          card.disabled = locked;
+          card.innerHTML =
+            '<span class="road-number">ROAD ' + lv.id + '</span>' +
+            '<span class="road-icon">' + lv.icon + '</span>' +
+            '<span class="road-name">' + lv.name + '</span>' +
+            '<span class="road-desc">' + lv.desc + '</span>' +
+            '<span class="road-diff">' + lv.diff + '</span>' +
+            statusTag;
+          if (!locked) {
+            card.addEventListener("click", function () { selectedLevel = lv.id; renderLevelCenter(); });
+          }
+          grid.appendChild(card);
+        });
+        var progressEl = document.getElementById("levelProgress");
+        if (progressEl) progressEl.style.display = "none";
+
+        var startBtn = document.getElementById("levelStartBtn");
+        if (startBtn) startBtn.textContent = "Start Road " + selectedLevel;
+      }
+
+      function openLevelCenter() {
+        unlockedLevel = getLevelProgress();
+        if (selectedLevel > unlockedLevel) selectedLevel = unlockedLevel;
+        renderLevelCenter();
+        showScreen("level");
+      }
+
+      function showScreen(name) {
+        screen = name;
+        document.querySelectorAll(".screen").forEach(function (el) { el.classList.remove("active"); });
+        document.getElementById(name + "Screen").classList.add("active");
+      }
+
+      function startGame() {
+        resetRun();
+        AudioManager.playMusic(selectedLevel);
+        showScreen("game");
+        document.getElementById("pauseBtn").textContent = "❚❚";
+        layout();
+        updateHud();
+      }
+
+      function getHistory() {
+        try { return JSON.parse(localStorage.getItem('diyayatra_history') || '[]'); } catch (e) { return []; }
+      }
+      function saveJourney(quitEarly) {
+        var history = getHistory();
+        var lv = currentLevel();
+        var dur = Math.floor((Date.now() - startTime) / 1000);
+        var mins = String(Math.floor(dur / 60)).padStart(2, '0');
+        var secs = String(dur % 60).padStart(2, '0');
+        var entry = {
+          roadId: lv.id, roadName: lv.name, startedAt: startTime, endedAt: Date.now(),
+          duration: mins + ":" + secs, distance: Math.floor(distance),
+          fuelRemaining: Math.floor(fuel), diyas: diyaCount, modaks: modakCount,
+          shrines: shrinesPassed, tasksCompleted: totalTasksCompleted,
+          difficulty: lv.diff, completed: (fuel > 0 && Math.abs(cart.angle) <= MAX_TILT),
+          quitEarly: quitEarly || false, dateStr: new Date().toLocaleDateString(),
+          multiplayer: isMultiplayer
+        };
+        history.unshift(entry);
+        if (history.length > 50) history.pop();
+        try { localStorage.setItem('diyayatra_history', JSON.stringify(history)); } catch (e) { }
+      }
+
+      function endGame() {
+        if (!running) return;
+        running = false;
+        AudioManager.stopMusic(500);
+        saveJourney(false);
+        var finalDist = Math.floor(distance);
+        var best = getBest();
+        var isNew = finalDist > best;
+        if (isNew) setBest(finalDist);
+
+        var lv = currentLevel();
+        var completedRoad = (finalDist >= lv.unlockDistance);
+        var nextLv = selectedLevel + 1;
+
+        if (completedRoad && nextLv <= 5) {
+          setUnlockedLevel(nextLv);
+        }
+
+        var nextBtn = document.getElementById("nextRoadBtn");
+        if (completedRoad && nextLv <= 5) {
+          nextBtn.style.display = "inline-block";
+          nextBtn.onclick = function () { selectedLevel = nextLv; startGame(); };
+        } else {
+          nextBtn.style.display = "none";
+        }
+
+        if (lv.id === 5 && completedRoad) {
+          document.getElementById("summitDist").textContent = finalDist;
+          document.getElementById("summitDiyas").innerHTML = "🪔" + diyaCount + " 🍡" + modakCount;
+          setTimeout(function () { showScreen("summit"); }, 500);
+        } else {
+          document.getElementById("finalDist").textContent = finalDist;
+          document.getElementById("finalDiyas").innerHTML = "🪔" + diyaCount + " 🍡" + modakCount;
+          document.getElementById("finalTasks").textContent = totalTasksCompleted;
+          document.getElementById("newBestTag").style.display = isNew ? "block" : "none";
+          setTimeout(function () { showScreen("results"); }, 500);
+        }
+      }
+
+      var introScreen = document.getElementById("introScreen");
+      var introVideo = document.getElementById("introVideo");
+      var introStartBtn = document.getElementById("introStartBtn");
+      var introReady = false;
+      var introTimer = null;
+
+      if (sessionStorage.getItem("diyayatra_intro_played")) {
+        introScreen.style.display = "none";
+        openLevelCenter();
+      } else {
+        introReady = true;
+        introStartBtn.classList.add("ready");
+      }
+
+      function beginFromIntro(e) {
+        if (e) e.preventDefault();
+        if (!introReady) return;
+        introReady = false;
+        introStartBtn.classList.remove("ready");
+        sessionStorage.setItem("diyayatra_intro_played", "true");
+
+        if (introVideo) {
+          try {
+            introVideo.muted = false;
+            introVideo.volume = 1.0;
+            introVideo.currentTime = 0;
+            var p = introVideo.play();
+            if (p !== undefined) {
+              p.catch(function (err) {
+                console.warn("[DIYA] Intro audio/playback was not unlocked:", err);
+              });
+            }
+
+            // When video ends naturally, go to Game Center
+            introVideo.addEventListener('ended', completeTransition, { once: true });
+
+            // Allow skipping by tapping anywhere after it starts playing
+            setTimeout(function () {
+              introScreen.addEventListener("click", completeTransition, { once: true });
+            }, 500);
+
+          } catch (err) {
+            console.warn("[DIYA] Audio unlock failed:", err);
+            completeTransition();
+          }
+        } else {
+          completeTransition();
+        }
+      }
+
+      var transitionDone = false;
+      function completeTransition() {
+        if (transitionDone) return;
+        transitionDone = true;
+        console.log("[DIYA] Switching to Game Center");
+
+        introScreen.style.transition = "opacity 0.6s ease";
+        introScreen.style.opacity = "0";
+
+        try { if (introVideo) { introVideo.pause(); introVideo.currentTime = 0; } } catch (err) { }
+
+        setTimeout(function () {
+          introScreen.classList.remove("active");
+          introScreen.style.display = ""; // clear inline none
+          introScreen.style.opacity = ""; // clear inline opacity
+
+          openLevelCenter();
+          console.log("[DIYA] Game Center rendered and visible");
+        }, 600);
+      }
+
+      introStartBtn.addEventListener("click", beginFromIntro);
+      function renderHistory() {
+        var hist = getHistory();
+        var tDist = 0, tDiyas = 0, tMods = 0, highId = 1;
+        hist.forEach(function (h) {
+          tDist += h.distance; tDiyas += h.diyas; tMods += h.modaks;
+          if (h.roadId > highId) highId = h.roadId;
+        });
+        document.getElementById("historyStats").innerHTML =
+          "<div class='result-stat'><span class='big' style='font-size:1.5rem;'>" + hist.length + "</span><span class='lbl'>JOURNEYS</span></div>" +
+          "<div class='result-stat'><span class='big' style='font-size:1.5rem;'>" + tDist + "m</span><span class='lbl'>DISTANCE</span></div>" +
+          "<div class='result-stat'><span class='big' style='font-size:1.5rem;'>" + (tDiyas + tMods) + "</span><span class='lbl'>OFFERINGS</span></div>" +
+          "<div class='result-stat'><span class='big' style='font-size:1.5rem;'>ROAD " + highId + "</span><span class='lbl'>HIGHEST</span></div>";
+
+        var list = document.getElementById("historyList");
+        list.innerHTML = "";
+        if (hist.length === 0) list.innerHTML = "<div style='opacity:0.6;margin-top:20px;'>No journeys yet.</div>";
+        hist.forEach(function (h) {
+          var c = document.createElement("div");
+          c.className = "history-card";
+          var st = h.quitEarly ? "Quit Early" : (h.completed ? "✓ Completed" : "✕ Crashed");
+          var modeTxt = h.multiplayer ? "👥 MULTIPLAYER" : "👤 SOLO";
+          c.innerHTML = "<div class='history-card-header'><h3>ROAD " + h.roadId + " — " + h.roadName.toUpperCase() + "</h3><span>" + h.dateStr + "</span></div>" +
+            "<div class='history-card-stats'><span>Mode: " + modeTxt + "</span><span>Status: " + st + "</span><span>Diff: " + h.difficulty + "</span>" +
+            "<span>Dist: " + h.distance + "m</span><span>Time: " + h.duration + "</span>" +
+            "<span>Diyas: " + h.diyas + "</span><span>Modaks: " + h.modaks + "</span></div>";
+          list.appendChild(c);
+        });
+      }
+      document.getElementById("historyBtn").addEventListener("click", function () {
+        renderHistory();
+        showScreen("history");
+      });
+      document.getElementById("historyBackBtn").addEventListener("click", openLevelCenter);
+
+      document.getElementById("beginBtn").addEventListener("click", openLevelCenter);
+      document.getElementById("levelStartBtn").addEventListener("click", function () {
+        isMultiplayer = false;
+        startGame();
+      });
+
+      var mpHistoryBtn = document.getElementById("mpHistoryBtn");
+      if (mpHistoryBtn) {
+        mpHistoryBtn.addEventListener("click", function () {
+          renderHistory();
+          showScreen("history");
+        });
+      }
+
+      function openComingSoon() {
+        var overlay = document.getElementById("comingSoonModalOverlay");
+        var box = document.getElementById("comingSoonBox");
+        box.classList.remove("closing");
+        overlay.style.display = "flex";
+      }
+      function closeComingSoon() {
+        var overlay = document.getElementById("comingSoonModalOverlay");
+        var box = document.getElementById("comingSoonBox");
+        box.classList.add("closing");
+        setTimeout(function () {
+          overlay.style.display = "none";
+          box.classList.remove("closing");
+        }, 280);
+      }
+      document.getElementById("mpStartBtn").addEventListener("click", openComingSoon);
+      document.getElementById("comingSoonBtn").addEventListener("click", closeComingSoon);
+      document.getElementById("comingSoonCloseBtn").addEventListener("click", closeComingSoon);
+
+      // ── Orientation Management (mobile only) ──────────────────
+      var isMobileDevice = false;
+      var orientationOverlay = document.getElementById("orientationOverlay");
+      var gameIsPortraitBlocked = false;
+
+      function detectMobile() {
+        return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+          || (navigator.maxTouchPoints > 1 && window.screen.width < 1200);
+      }
+
+      function isPortrait() {
+        return window.innerHeight > window.innerWidth;
+      }
+
+      function checkOrientation() {
+        if (!isMobileDevice) return;
+        if (screen !== "game") return;
+        if (isPortrait()) {
+          orientationOverlay.style.display = "flex";
+          if (running) {
+            running = false;
+            gameIsPortraitBlocked = true;
+          }
+        } else {
+          orientationOverlay.style.display = "none";
+          if (gameIsPortraitBlocked) {
+            gameIsPortraitBlocked = false;
+            running = true;
+            lastTs = 0;
+            layout();
+          }
+        }
+      }
+
+      var _originalStartGame = startGame;
+      startGame = function () {
+        _originalStartGame();
+        isMobileDevice = detectMobile();
+        if (isMobileDevice) {
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock("landscape").catch(function () { });
+          }
+          checkOrientation();
+        }
+      };
+
+      window.addEventListener("orientationchange", function () {
+        setTimeout(function () {
+          layout();
+          checkOrientation();
+        }, 200);
+      });
+
+      document.getElementById("historyBtn").addEventListener("click", function () {
+        renderHistory();
+        showScreen("history");
+      });
+      document.getElementById("pauseHistoryBtn").addEventListener("click", function () {
+        document.getElementById("pauseMenuOverlay").style.display = "none";
+        renderHistory();
+        showScreen("history");
+      });
+      document.getElementById("historyBackBtn").addEventListener("click", openLevelCenter);
+
+      function renderHistory() {
+        var history = getHistory();
+        var listEl = document.getElementById("historyList");
+        var statsEl = document.getElementById("historyStats");
+        listEl.innerHTML = "";
+        statsEl.innerHTML = "";
+
+        if (history.length === 0) {
+          listEl.innerHTML = "<div style='text-align:center; color:var(--cream); opacity:0.7; margin-top:40px;'>No journeys yet. Start your Yatra!</div>";
+          return;
+        }
+
+        var totalDist = 0, totalDiyas = 0, totalModaks = 0, totalSeconds = 0;
+        history.forEach(function (j) {
+          totalDist += j.distance;
+          totalDiyas += j.diyas;
+          totalModaks += j.modaks;
+          var p = j.duration.split(":");
+          totalSeconds += parseInt(p[0]) * 60 + parseInt(p[1]);
+        });
+
+        statsEl.innerHTML =
+          "<div class='result-stat'><span class='big'>" + history.length + "</span><span class='lbl'>JOURNEYS</span></div>" +
+          "<div class='result-stat'><span class='big'>" + totalDist + "m</span><span class='lbl'>DISTANCE</span></div>" +
+          "<div class='result-stat'><span class='big' style='font-size:1.3rem'>🪔" + totalDiyas + " 🍡" + totalModaks + "</span><span class='lbl'>OFFERINGS</span></div>";
+
+        history.forEach(function (j) {
+          var statusIcon = j.completed ? "✓ COMPLETED" : "QUIT EARLY";
+          var statusColor = j.completed ? "var(--leafgreen)" : "var(--kumkum)";
+          var card = document.createElement("div");
+          card.className = "history-card";
+          card.innerHTML =
+            "<div class='history-card-header'>" +
+            "<div><span style='font-size:0.75rem; opacity:0.8; margin-right:8px;'>" + j.dateStr + "</span><h3>ROAD " + j.roadId + " — " + j.roadName + "</h3></div>" +
+            "<div style='color:" + statusColor + "; font-size:0.8rem; font-weight:700;'>" + statusIcon + "</div>" +
+            "</div>" +
+            "<div class='history-card-stats'>" +
+            "<span>Dist: " + j.distance + "m</span>" +
+            "<span>Time: " + j.duration + "</span>" +
+            "<span>Fuel: " + j.fuelRemaining + "%</span>" +
+            "<span>Offerings: 🪔" + j.diyas + " 🍡" + j.modaks + "</span>" +
+            "<span>Diff: " + j.difficulty + "</span>" +
+            "</div>";
+          listEl.appendChild(card);
+        });
+      }
+
+      document.getElementById("againBtn").addEventListener("click", startGame);
+      document.getElementById("summitMapBtn").addEventListener("click", openLevelCenter);
+      document.getElementById("roadMapBtn").addEventListener("click", openLevelCenter);
+      document.getElementById("howToBtn").addEventListener("click", function () {
+        document.getElementById("howtoBox").classList.toggle("open");
+      });
+      document.getElementById("soundBtn").addEventListener("click", function () {
+        soundOn = !soundOn;
+        setSound(soundOn);
+        AudioManager.setMute(!soundOn);
+        this.textContent = "Sound: " + (soundOn ? "On" : "Off");
+        var psb = document.getElementById("pauseSoundBtn");
+        if (psb) psb.textContent = "Sound: " + (soundOn ? "On" : "Off");
+      });
+
+      document.getElementById("titleBest").textContent = "Best distance: " + Math.floor(getBest()) + " m";
+      renderLevelCenter();
+      document.getElementById("soundBtn").textContent = "Sound: " + (soundOn ? "On" : "Off");
+
+      window.addEventListener("resize", function () {
+        layout();
+        checkOrientation();
+      });
+
+    })();
+  </script>
+</body>
+
+</html>

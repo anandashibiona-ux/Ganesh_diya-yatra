@@ -1,0 +1,13 @@
+# Music License & Attribution
+
+Track Name: Indian
+Artist: Kulakovka
+Source: Pixabay (https://pixabay.com/music/india-indian-295889/)
+
+License: Pixabay Content License
+- Free for commercial and non-commercial use
+- No attribution required (though appreciated)
+
+**IMPORTANT**: 
+Since Pixabay actively blocks automated bots from downloading their music files, the `diya-yatra-driving.mp3` file included here is currently a placeholder! 
+You MUST download the real `.mp3` from the link above and replace the `diya-yatra-driving.mp3` file in this folder before shipping or playing the game.
