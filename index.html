@@ -1318,9 +1318,10 @@
     <div id="introScreen" class="screen intro-screen active" oncontextmenu="return false;"
       style="touch-action: manipulation;">
       <video id="introVideo" class="intro-video" muted playsinline preload="auto" disablePictureInPicture
-        oncontextmenu="return false;">
+        oncontextmenu="return false;" style="display: none;">
         <source src="ganesh.mp4" type="video/mp4">
       </video>
+      <img id="introImage" class="intro-video" src="ganesh.png?v=2" alt="Sri Siddhi Vinayaka" style="object-fit: cover; width: 100%; height: 100%; pointer-events: none;" oncontextmenu="return false;" />
       <div class="intro-vignette"></div>
       <div class="intro-brand">
         <div class="intro-kicker">A FESTIVAL HILLS JOURNEY</div>
@@ -2890,6 +2891,7 @@
 
       var introScreen = document.getElementById("introScreen");
       var introVideo = document.getElementById("introVideo");
+      var introImage = document.getElementById("introImage");
       var introStartBtn = document.getElementById("introStartBtn");
       var introReady = false;
       var introTimer = null;
@@ -2909,7 +2911,9 @@
         introStartBtn.classList.remove("ready");
         sessionStorage.setItem("diyayatra_intro_played", "true");
 
-        if (introVideo) {
+        if (introVideo && introImage) {
+          introImage.style.display = "none";
+          introVideo.style.display = "block";
           try {
             introVideo.muted = false;
             introVideo.volume = 1.0;
@@ -2921,21 +2925,21 @@
               });
             }
 
-            // When video ends naturally, go to Game Center
             introVideo.addEventListener('ended', completeTransition, { once: true });
 
-            // Allow skipping by tapping anywhere after it starts playing
             setTimeout(function () {
-              introScreen.addEventListener("click", completeTransition, { once: true });
+              introScreen.addEventListener("click", skipIntroVideo);
             }, 500);
-
-          } catch (err) {
-            console.warn("[DIYA] Audio unlock failed:", err);
+          } catch (e) {
             completeTransition();
           }
         } else {
           completeTransition();
         }
+      }
+      
+      function skipIntroVideo() {
+        completeTransition();
       }
 
       var transitionDone = false;
